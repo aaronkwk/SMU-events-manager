@@ -1,12 +1,13 @@
 <?php
 session_start();
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    spl_autoload_register(
+spl_autoload_register(
       function ($class) {
         require_once "model/$class.php";
       }
     );
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    
     $manager = new ConnectionManager();
     $conn = $manager->getConnection();
 
