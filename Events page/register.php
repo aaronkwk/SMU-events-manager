@@ -1,7 +1,12 @@
 <?php
-require_once('db_connect.php');
+spl_autoload_register(
+  function ($class) {
+    require_once "model/$class.php";
+  }
+);
+
 $manager = new ConnectionManager();
-$conn = $manager->connect();
+$conn = $manager->getConnection();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST['username'] ?? "");
