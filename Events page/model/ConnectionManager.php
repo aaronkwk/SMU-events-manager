@@ -12,8 +12,8 @@ class ConnectionManager
         $ssl_ca     = 'C:\\ssl\\combined-ca-certificates.pem'; // note the double backslashes
 
         $options = [
-            PDO::MYSQL_ATTR_SSL_CA => $ssl_ca,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false, // optional for testing
         ];
 
         try {
