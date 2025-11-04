@@ -193,10 +193,10 @@ document.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-remove]');
   if (!btn) return;
   const [title, startISO] = btn.dataset.remove.split('|');
-  const updatedList = loadMyEvents.filter(ev => !(ev.title === title && ev.startISO === startISO));
+  loadMyEvents = loadMyEvents.filter(ev => !(ev.title === title && ev.startISO === startISO));
   console.log(btn.dataset.eid);
   removeEvents(btn.dataset.eid);
-  render(updatedList);
+  render(loadMyEvents);
 });
 
 
