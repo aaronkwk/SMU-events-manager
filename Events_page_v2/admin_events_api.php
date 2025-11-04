@@ -134,7 +134,7 @@ try {
     if ($id <= 0) { http_response_code(400); echo json_encode(["error"=>"Bad id"]); exit; }
 
     // verify ownership
-    $chk = $db->prepare("SELECT COUNT(*) FROM event_person WHERE event_id=? AND person_id=? AND (role='creator' OR is_creator=1)");
+    $chk = $db->prepare("SELECT COUNT(*) FROM event_person WHERE event_id=? AND person_id=? AND role='creator'");
     $chk->execute([$id, $myId]);
     if (!$chk->fetchColumn()) {
       http_response_code(403);
@@ -187,7 +187,7 @@ try {
     if ($id <= 0) { http_response_code(400); echo json_encode(["error"=>"Bad id"]); exit; }
 
     // verify ownership
-    $chk = $db->prepare("SELECT COUNT(*) FROM event_person WHERE event_id=? AND person_id=? AND (role='creator' OR is_creator=1)");
+    $chk = $db->prepare("SELECT COUNT(*) FROM event_person WHERE event_id=? AND person_id=? AND role='creator'");
     $chk->execute([$id, $myId]);
     if (!$chk->fetchColumn()) {
       http_response_code(403);
