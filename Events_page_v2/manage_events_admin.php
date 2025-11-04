@@ -52,6 +52,10 @@ $events = $st->fetchAll(PDO::FETCH_ASSOC);
     .icon-btn{ width:2.35rem; height:2.35rem; display:inline-flex; align-items:center; justify-content:center; border-radius:.5rem; }
     .thumb { max-height: 180px; object-fit: cover; }
     .form-text.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .item i {
+      font-size: 1rem;
+      margin-right: 4px;
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -101,6 +105,11 @@ $events = $st->fetchAll(PDO::FETCH_ASSOC);
                   <span><?= htmlspecialchars($ev['location']) ?></span>
                 </div>
               <?php endif; ?>
+              <div class="item d-flex align-items-center gap-1">
+                <i class="bi bi-info-circle text-primary text-secondary"></i>
+                <span><?= htmlspecialchars($ev['details']) ?></span>
+              </div>
+
             </div>
 
             <div class="d-flex justify-content-end gap-2">
