@@ -62,6 +62,7 @@ $all_users_json = json_encode($all_users_arr);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Omni Events</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <link rel="stylesheet" href="events_style.css">
@@ -162,7 +163,7 @@ $all_users_json = json_encode($all_users_arr);
                         <p><strong>Total Points:</strong> <span id="userPoints"></span></p>
                         <p><strong>Rank:</strong> <span id="userRank"></span></p>
                         <div class="d-flex align-items-center">
-                            <div id="userBadge"></div>
+                            <div id="userBadge" class="d-flex align-items-center"></div>
                         </div>
                     </div>
                 </div>
@@ -185,8 +186,10 @@ $all_users_json = json_encode($all_users_arr);
                             <tbody id="leaderboardBody"></tbody>
                         </table>
                         <div class="text-center">
-                            <button class="btn btn-outline-primary btn-sm">View More</button>
-                            <p class="mt-2"><strong>Your current rank:</strong> <span id="yourCurrentRank"></span></p>
+                            <!-- <button class="btn btn-outline-primary btn-sm">View More</button> -->
+                            <nav aria-label="Page navigation">
+                                <ul id="pagination" class="pagination justify-content-center"></ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
@@ -224,42 +227,112 @@ $all_users_json = json_encode($all_users_arr);
             return dateText;
         }
 
-        let leaderboard = <?= $all_users_json ?>
+        // pages
+        let currentPage = 1;
+        let numRankings = 20;
 
-        let username = "<?php echo $username; ?>";
+        function renderLeaderboardPage(page, ldrboard) {
+            let leaderboardBody = document.getElementById("leaderboardBody");
+            leaderboardBody.innerHTML = "";
+            let start = (page - 1) * numRankings;
+            let end = start + numRankings;
+            pagedLeaderboard = ldrboard.slice(start, end);
+
+            ldrboard.slice(start, end).forEach((u, i) => {
+                leaderboardBody.innerHTML += `
+                    <tr>
+                        <td>${start + i + 1}</td>
+                        <td>${u.username}</td>
+                        <td>${u.points}</td>
+                    </tr>`;
+            });
+        }
+
+        let pagination = document.getElementById("pagination");
+
+        function renderPagination(ldrboard) {
+            pagination.innerHTML = "";
+            let totalPages = Math.ceil(ldrboard.length / numRankings);
+
+            const createPageItem = (pageNum, label = pageNum, disabled = false, active = false) => {
+                let li = document.createElement("li");
+                li.className = `page-item ${disabled ? "disabled" : ""} ${active ? "active" : ""}`;
+                li.innerHTML = `<a class="page-link" href="#">${label}</a>`;
+                if (!disabled && !active) {
+                    li.addEventListener("click", e => {
+                        e.preventDefault();
+                        currentPage = pageNum;
+                        renderLeaderboardPage(currentPage, leaderboard);
+                        renderPagination(leaderboard);
+                        leaderboardBody.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                    });
+                }
+                return li;
+            };
+
+            pagination.appendChild(createPageItem(currentPage - 1, "Previous", currentPage === 1));
+
+            // how many pages shown at one time
+            let windowSize = 3;
+            let startPage = Math.max(1, currentPage - windowSize);
+            let endPage = Math.min(totalPages, currentPage + windowSize);
+            for (let i = startPage; i <= endPage; i++) {
+                pagination.appendChild(createPageItem(i, i, false, currentPage === i));
+            }
+
+            // Next button
+            pagination.appendChild(createPageItem(currentPage + 1, "Next", currentPage === totalPages));
+        }
+
+
+
+        let leaderboard = <?= $all_users_json ?>;
+        leaderboard.sort((a, b) => b.points - a.points);
+
+        let username = "<?= $username ?>";
         let user = leaderboard.find(u => u.username === username) || leaderboard[0];
 
         // Populate leaderboard
-        let leaderboardBody = document.getElementById("leaderboardBody");
-        leaderboard.slice(0, 10).forEach((u, i) => {
-            leaderboardBody.innerHTML += `
-        <tr>
-          <td>${i + 1}</td>
-          <td>${u.username}</td>
-          <td>${u.points}</td>
-        </tr>`;
-        });
+        renderLeaderboardPage(currentPage, leaderboard);
+        renderPagination(leaderboard);
+
 
         // Personal card
         document.getElementById("userPoints").innerText = user.points;
         document.getElementById("userRank").innerText = leaderboard.indexOf(user) + 1;
-        document.getElementById("yourCurrentRank").innerText = leaderboard.indexOf(user) + 1;
 
-        // Badge logic
+        // show me ur badge
         let badgeContainer = document.getElementById("userBadge");
-        let badgeClass = "badge-bronze",
-            badgeText = "Bronze";
+        let badgePic = "bronze_badge";
+        let badgeText = "Bronze";
         if (user.points >= 30 && user.points < 80) {
-            badgeClass = "badge-silver";
+            badgePic = "silver_badge";
             badgeText = "Silver";
         } else if (user.points >= 80) {
-            badgeClass = "badge-gold";
+            badgePic = "gold_badge";
             badgeText = "Gold";
         }
-        badgeContainer.innerHTML = `<div class="badge-circle ${badgeClass}">${badgeText[0]}</div><strong>${badgeText} Badge</strong>`;
+        badgeContainer.innerHTML = `<img src="pictures/${badgePic}.png" style="height:50px; width=auto" class="me-2"><strong>${badgeText} Badge</strong>`;
 
         // Recent activity
-        let recentEvents = <?= $user_events_json ?>;
+        let all_user_events = <?= $user_events_json ?>;
+        function filterRecentEvents(events) {
+            const now = new Date();
+            const twoWeeksAgo = new Date();
+            twoWeeksAgo.setDate(now.getDate() - 14);
+
+            return events.filter(event => {
+                const eventDate = new Date(event.dateISO);
+                return eventDate >= twoWeeksAgo && eventDate <= now;
+            });
+        }
+        
+        
+        recentEvents = filterRecentEvents(all_user_events);
+
         let recentContainer = document.getElementById("recentEvents");
         recentEvents.forEach(ev => {
             recentContainer.innerHTML += `
