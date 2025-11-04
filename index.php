@@ -1,3 +1,3 @@
 <?php
-phpinfo()
+header("Location: Events page\Login.php")
 ?>
