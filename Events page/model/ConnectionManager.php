@@ -18,10 +18,12 @@ class ConnectionManager
 
         try {
             $conn = new PDO(
-                "mysql:host=$servername;dbname=$dbname;port=$port;charset=utf8mb4",
+                "mysql:host=$servername;dbname=$dbname;port=$port;sslmode=require;charset=utf8mb4",
                 $username,
                 $password,
-                $options
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+                ]
             );
             return $conn;
         } catch (PDOException $e) {
