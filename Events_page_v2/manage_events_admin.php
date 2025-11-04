@@ -106,7 +106,7 @@ $events = $st->fetchAll(PDO::FETCH_ASSOC);
                 </div>
               <?php endif; ?>
               <div class="item d-flex align-items-center gap-1">
-                <i class="bi bi-info-circle text-primary text-secondary"></i>
+                <i class="bi bi-info-circle style="color: rgba(33, 37, 41, 0.75)"></i>
                 <span><?= htmlspecialchars($ev['details']) ?></span>
               </div>
 
