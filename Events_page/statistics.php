@@ -147,7 +147,7 @@ $user_events_json = json_encode($user_events_arr);
     <div id="leaderboardContainer" class="row g-3"></div>
   </div>
 
-  <hr class="my-5">
+ <br>
 
   <div class="container mt-4">
     <h2 class="leaderboard-title">📊 My Event Statistics</h2>
