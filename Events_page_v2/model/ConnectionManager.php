@@ -1,20 +1,50 @@
 <?php
-
 class ConnectionManager
 {
     public function getConnection()
     {
-        $servername = 'localhost';
-        $dbname = 'omni';
-        $username = 'root';
-        $password = '';
-        $port = 3306;
+        $servername = 'omni-server.mysql.database.azure.com';
+        $dbname     = 'omni-db';
+        $username   = 'zevoevjtfj';
+        $password   = 'passwordOmni1';
+        $port       = 3306;
 
-        $conn  = new PDO("mysql:host=$servername;dbname=$dbname;port=$port", $username, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // if fail, exception will be thrown
+        // Detect Azure reliably
+        $isAzure = getenv('WEBSITE_SITE_NAME') !== false;
 
-        return $conn;
+        // Common DSN
+        $dsn = "mysql:host=$servername;dbname=$dbname;port=$port;charset=utf8mb4";
+
+        if ($isAzure) {
+            // === THIS IS THE FIX ===
+            // 
+            // 1. Define the path to the certificate *on the server*.
+            //    __DIR__ gets the directory of this PHP file.
+            $ssl_ca = __DIR__ . '/ssl/combined-ca-certificates.pem';
+
+            // 2. Add the SSL_CA option to force a secure connection.
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::MYSQL_ATTR_SSL_CA => $ssl_ca,
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true
+            ];
+            
+        } 
+        else {
+            // Local: use CA certificate
+            $ssl_ca = '/ssl/combined-ca-certificates.pem'; // Your local path
+            $options = [
+                PDO::MYSQL_ATTR_SSL_CA => $ssl_ca,
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ];
+        }
+
+        try {
+            return new PDO($dsn, $username, $password, $options);
+        } catch (PDOException $e) {
+            die("Database connection failed: " . $e->getMessage());
+        }
     }
 }
-
 ?>

@@ -1,23 +1,49 @@
 <?php
-class ConnectionManager {
-    public function connect() {
-        $servername = 'localhost';
-        $username = 'root';
-        $password = '';
-        $dbname = 'omni';
-        $port = '3306';
+class ConnectionManager
+{
+    public function getConnection()
+    {
+        $servername = 'omni-server.mysql.database.azure.com';
+        $dbname     = 'omni-db';
+        $username   = 'zevoevjtfj';
+        $password   = 'passwordOmni1';
+        $port       = 3306;
+
+        // Detect Azure reliably
+        $isAzure = getenv('WEBSITE_SITE_NAME') !== false;
+
+        // Common DSN
+        $dsn = "mysql:host=$servername;dbname=$dbname;port=$port;charset=utf8mb4";
+
+        if ($isAzure) {
+            // === THIS IS THE FIX ===
+            // 
+            // 1. Define the path to the certificate *on the server*.
+            //    __DIR__ gets the directory of this PHP file.
+            $ssl_ca = __DIR__ . '/ssl/combined-ca-certificates.pem';
+
+            // 2. Add the SSL_CA option to force a secure connection.
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::MYSQL_ATTR_SSL_CA => $ssl_ca,
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true
+            ];
+            
+        } 
+        else {
+            // Local: use CA certificate
+            $ssl_ca = '/ssl/combined-ca-certificates.pem'; // Your local path
+            $options = [
+                PDO::MYSQL_ATTR_SSL_CA => $ssl_ca,
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ];
+        }
 
         try {
-            $pdo = new PDO(
-                "mysql:host=$servername;dbname=$dbname;port=$port",
-                $username,
-                $password
-            );
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $pdo;
+            return new PDO($dsn, $username, $password, $options);
         } catch (PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
-            return null;
+            die("Database connection failed: " . $e->getMessage());
         }
     }
 }
