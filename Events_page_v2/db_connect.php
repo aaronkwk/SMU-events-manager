@@ -5,8 +5,7 @@ class ConnectionManager
     {
         $servername = 'omni-server.mysql.database.azure.com';
         $dbname     = 'omni-db';
-    // Include server in username for Azure MySQL (user@servername)
-    $username   = 'zevoevjtfj@omni-server';
+        $username   = 'zevoevjtfj';
         $password   = 'passwordOmni1';
         $port       = 3306;
 
@@ -32,8 +31,8 @@ class ConnectionManager
             
         } 
         else {
-            // Local: use project-relative certificate path
-            $ssl_ca = __DIR__ . '/ssl/combined-ca-certificates.pem';
+            // Local: use CA certificate
+            $ssl_ca = '/ssl/combined-ca-certificates.pem'; // Your local path
             $options = [
                 PDO::MYSQL_ATTR_SSL_CA => $ssl_ca,
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
