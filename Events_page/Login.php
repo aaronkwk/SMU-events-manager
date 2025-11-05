@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // redirect for admin
             } else {
               echo "<script>
-                    window.location.href = 'manage_events_admin.php';
+                    window.location.href = 'https://omni-events-manager-fqcva6hxekcqgydp.southeastasia-01.azurewebsites.net/Events_page/manage_events_admin.php';
                   </script>";
               exit;
             }
