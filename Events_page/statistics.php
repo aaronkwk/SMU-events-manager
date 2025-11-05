@@ -17,24 +17,30 @@ if (!isset($_SESSION['username'])) {
   exit;
 }
 
-// $cm = new ConnectionManager();
-// $db = $cm->connect();
-
-// // Resolve current user
-// $u = $db->prepare("SELECT id, role FROM users WHERE username = ?");
-// $u->execute([$_SESSION['username']]);
-// $me = $u->fetch(PDO::FETCH_ASSOC);
-// if (!$me) { echo "<script>alert('User not found'); location.href='Login.php';</script>"; exit; }
-// $myId = (int)$me['id'];
 
 $dao = new EventCollectionDAO();
-// require_once "EventCollectionDAO.php";
-// require_once "ConnectionManager.php";
-
 
 $currentUser = $dao->getUserId($_SESSION["username"]);
-$user_events_obj = $dao->getUsersEvents($currentUser);
 
+$all_events_obj = $dao->getEvents();
+$all_events_arr = array_map(function ($events) {
+  return [
+      'id' => $events->getId(),
+      'title' => $events->getTitle(),
+      'category' => $events->getCategory(),
+      'date' => $events->getDate(),
+      'start_time' => $events->getStartTime(),
+      'end_time' => $events->getEndTime(),
+      'location' => $events->getLocation(),
+      'picture' => $events->getPicture(),
+      'startISO' => $events->getStartISO(),
+      'endISO' => $events->getEndISO(),
+  ];
+}, $all_events_obj);
+$all_events_json = json_encode($all_events_arr);
+
+
+$user_events_obj = $dao->getUsersEvents($currentUser);
 $user_events_arr = array_map(function ($events) {
   return [
       'id' => $events->getId(),
@@ -50,7 +56,7 @@ $user_events_arr = array_map(function ($events) {
   ];
 }, $user_events_obj);
 
-$user_events_json = json_encode($user_events_arr);
+$user_events_json = json_encode($user_events_arr);    // USER EVENTS
 
 
 
@@ -143,11 +149,11 @@ $user_events_json = json_encode($user_events_arr);
 
 <body>
   <div class="container mt-4">
-    <h2 class="leaderboard-title">🏆 Event Leaderboard</h2>
+    <h2 class="leaderboard-title">🏆 Top 3 Leaderboard</h2>
     <div id="leaderboardContainer" class="row g-3"></div>
   </div>
 
- <br>
+  <hr class="my-5">
 
   <div class="container mt-4">
     <h2 class="leaderboard-title">📊 My Event Statistics</h2>
@@ -155,38 +161,47 @@ $user_events_json = json_encode($user_events_arr);
   </div>
 
   <script>
+    let allEvents = <?= $all_events_json ?>;
+    console.log(allEvents);
     const events = <?php echo $user_events_json; ?>;
     console.log(events);
     const container = document.getElementById("leaderboardContainer");
 
-    events.forEach((e, index) => {
-      getEventCount(e.id);
-      const rank = index + 1;
-      const card = document.createElement("div");
-      card.className = "col-md-4";
-      // console.log(count);
-      card.innerHTML = `
-        <div class="event-card ${e.category}">
-          <img class="event-thumb" src="${e.picture}" alt="${e.title}">
-          <div class="event-body">
-            <div class="d-flex align-items-center mb-2">
-              <div class="rank-badge me-2">#${rank}</div>
-              <h5 class="event-title mb-0">${e.title}</h5>
-            </div>
-            <ul class="meta-list">
-              <li><i class="bi bi-calendar2-event"></i>${e.date}</li>
-              <li><i class="bi bi-geo-alt"></i>${e.location}</li>
-            </ul>
-            <div class="event-actions d-flex flex-column">
-            
-              <p id="signups">🔖 </p>
+    // adding the ranking to every event json object (allEvents)
+    getAllEventRankings().then(() => {      
+      allEvents.sort((a, b) => b.signups - a.signups);
+      console.log(allEvents);
+      let top3Events = allEvents.slice(0, 3);
+
+      top3Events.forEach((e, index) => {
+        const rank = index + 1;
+        const card = document.createElement("div");
+        card.className = "col-md-4";
+        // console.log(count);
+        card.innerHTML = `
+          <div class="event-card ${e.category}">
+            <img class="event-thumb" src="${e.picture}" alt="${e.title}">
+            <div class="event-body">
+              <div class="d-flex align-items-center mb-2">
+                <div class="rank-badge me-2">#${rank}</div>
+                <h5 class="event-title mb-0">${e.title}</h5>
+              </div>
+              <ul class="meta-list">
+                <li><i class="bi bi-calendar2-event"></i>${e.date}</li>
+                <li><i class="bi bi-geo-alt"></i>${e.location}</li>
+              </ul>
+              <div class="event-actions d-flex flex-column">
               
+                <p>🔖 ${e.signups} Signups</p>
+                
+              </div>
             </div>
           </div>
-        </div>
-      `;
-      container.appendChild(card);
+        `;
+        container.appendChild(card);
+      });
     });
+
 
     let myEventsContainer = document.getElementById("myeventsContainer");
     events.forEach((e) => {
@@ -208,11 +223,11 @@ $user_events_json = json_encode($user_events_arr);
       myEventsContainer.appendChild(card);
 
       // Fetch signup counts
-      getEventCount(e.id);
+      fillSignups(e.id);
     });
 
 
-    function getEventCount(eid) {
+    function fillSignups(eid) {
       let userID = <?= $currentUser ?>;
       let url = "axios/sql_updating.php";
 
@@ -226,22 +241,40 @@ $user_events_json = json_encode($user_events_arr);
         .then(response => {
             console.log(response.data);
             let count = response.data;
-            document.getElementById(`signups-${eid}`).innerHTML = ` <strong> Signups : ${count} </strong>`
+            document.getElementById(`signups-${eid}`).innerHTML = ` <strong>Signups: ${count} </strong>`
             
         })
         .catch(error => {
             console.log(error.message);
         });
-
     }
+
+    function getAllEventRankings() {
+      let userID = <?= $currentUser ?>;
+      let url = "axios/sql_updating.php";
+
+      const requestPromises = allEvents.map((event) => {
+        return axios.get(url, { params: 
+          {
+            "personID": userID,
+            "eventID": event.id,
+            "option": "getCount"
+          }
+        })
+        .then(response => {
+          console.log(response.data); 
+          let count = response.data;
+          event.signups = count; 
+        })
+        .catch(error => {
+          console.log(`Error fetching count for event ${event.id}: ${error.message}`);
+          event.signups = 0; // if cannot find data
+        });
+    });
+
+  return Promise.all(requestPromises);
+    }
+
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-  
