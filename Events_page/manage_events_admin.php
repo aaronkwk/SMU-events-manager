@@ -231,12 +231,18 @@ $events_json = array_map(function($ev) {
       background: white;
       cursor: pointer;
       transition: all 0.2s;
-      color: black;
+      color: #212529;
+      text-decoration: none;
     }
     
     .icon-btn:hover {
       background: #f8f9fa;
       border-color: #adb5bd;
+      color: #212529;
+    }
+    
+    .icon-btn i {
+      color: #212529;
     }
     
     .form-text.mono {
@@ -338,6 +344,7 @@ $events_json = array_map(function($ev) {
           <div class="col-md-6">
             <label class="form-label">Event Image</label>
             <input type="file" class="form-control" name="picture_file" accept="image/*">
+            <div class="form-text mono">Accepted: image/* – Max size depends on php.ini</div>
           </div>
           <div class="col-12">
             <label class="form-label">Details</label>
@@ -450,6 +457,9 @@ function createEventCard(event) {
   const catClass = getCategoryClass(event.category);
   const catLabel = event.category ? event.category.charAt(0).toUpperCase() + event.category.slice(1) : 'Tech';
   
+  // Escape the event data for use in HTML attribute
+  const eventData = JSON.stringify(event).replace(/'/g, '&apos;').replace(/"/g, '&quot;');
+  
   return `
     <div class="event-card">
       <img class="event-thumb" src="${imgSrc}" alt="">
@@ -469,12 +479,17 @@ function createEventCard(event) {
           <i class="bi bi-geo-alt"></i>
           <span>${event.location}</span>
         </div>` : ''}
+        ${event.details ? `
+        <div class="event-meta-item">
+          <i class="bi bi-info-circle"></i>
+          <span>${event.details}</span>
+        </div>` : ''}
       </div>
       <div class="event-actions">
         <a class="icon-btn" href="chat.php?event_id=${event.id}" title="Open chat">
           <i class="bi bi-chat-dots"></i>
         </a>
-        <button class="icon-btn" title="Edit" onclick='openEdit(${JSON.stringify(event)})'>
+        <button class="icon-btn" title="Edit" data-event='${eventData}' onclick='openEdit(this)'>
           <i class="bi bi-pencil-square"></i>
         </button>
         <button class="icon-btn" title="Delete" onclick="doDelete(${event.id})">
@@ -508,7 +523,9 @@ function renderEvents() {
   });
 }
 
-function openEdit(event) {
+function openEdit(button) {
+  const event = JSON.parse(button.dataset.event.replace(/&quot;/g, '"').replace(/&apos;/g, "'"));
+  
   document.getElementById('evIdEdit').value = event.id;
   document.getElementById('evTitleEdit').value = event.title || '';
   document.getElementById('evCategoryEdit').value = (event.category || 'tech').toLowerCase();
