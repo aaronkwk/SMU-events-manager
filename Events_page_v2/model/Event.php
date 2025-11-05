@@ -11,11 +11,10 @@ class Event {
     private $picture;
     private $startISO;
     private $endISO;
-    private $details;
 
 
     
-    public function __construct($id, $title, $category, $date, $start_time, $end_time, $location, $picture, $startISO, $endISO, $details){
+    public function __construct($id, $title, $category, $date, $start_time, $end_time, $location, $picture, $startISO, $endISO){
         $this->id = $id;
         $this->title = $title;
         $this->category = $category;
@@ -26,7 +25,6 @@ class Event {
         $this->picture = $picture;
         $this->startISO = $startISO;
         $this->endISO = $endISO;
-        $this->details = $details;
     }
 
     public function getId() {
@@ -67,10 +65,6 @@ class Event {
 
     public function getEndISO(){
         return $this->endISO;
-    }
-
-    public function getDetails(){
-        return $this->details;
     }
     
 }

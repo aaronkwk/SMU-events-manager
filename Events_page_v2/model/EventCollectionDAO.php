@@ -25,8 +25,7 @@ class EventCollectionDAO
                 $row["location"],
                 $row["picture"],
                 $row["startISO"],
-                $row["endISO"],
-                $row["details"]
+                $row["endISO"]
             );
         }
 
@@ -59,8 +58,7 @@ class EventCollectionDAO
                 $row["location"],
                 $row["picture"],
                 $row["startISO"],
-                $row["endISO"],
-                $row["details"]
+                $row["endISO"]
             );
         }
 
@@ -70,20 +68,46 @@ class EventCollectionDAO
 
     }
 
+    public function getUsers()
+    {
+        $sql = 'select * from users where role = "user"';
+
+        $connMgr = new ConnectionManager();
+        $conn = $connMgr->getConnection();
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+        $users = [];
+        while ($row = $stmt->fetch()) {
+            $users[] = new User(
+                $row["id"],
+                $row["username"],
+                $row["school"],
+                $row["points"]
+            );
+        }
+
+        $stmt = null;
+        $conn = null;
+        return $users;
+    }
+
     // add event to user
     public function userAddEvent($personID, $eventID) {
-        $conn = (new ConnectionManager())->getConnection();
+        $connMgr = new ConnectionManager();
+		$conn = $connMgr->getConnection();
 
-        $sql = 'INSERT INTO event_person (person_id, event_id, role)
-                VALUES (:personID, :eventID, :role)';
-        $stmt = $conn->prepare($sql);
-        $role = 'participant';
-        $stmt->bindParam(':personID', $personID, PDO::PARAM_INT);
-        $stmt->bindParam(':eventID',  $eventID,  PDO::PARAM_INT);
-        $stmt->bindParam(':role',     $role,     PDO::PARAM_STR);
-        $stmt->execute();
+		$sql = 'INSERT INTO event_person VALUES
+				(:personID, :eventID)';
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(':personID', $personID, PDO::PARAM_INT);
+		$stmt->bindParam(':eventID', $eventID, PDO::PARAM_INT);
 
-        $stmt = null; $conn = null;
+		$stmt->execute();
+		$stmt = null;
+		$conn = null;
     }
 
     // remove event from user
@@ -139,29 +163,36 @@ class EventCollectionDAO
 
     // for loading a user's saved events
     public function getUsersEvents($userID) {
-        $conn = (new ConnectionManager())->getConnection();
+        $connMgr = new ConnectionManager();
+        $conn = $connMgr->getConnection();
 
-        $sql = 'SELECT DISTINCT e.id, e.title, e.category, e.date, e.start_time, e.end_time,
-                    e.location, e.picture, e.startISO, e.endISO, e.details
-                FROM events e
-                JOIN event_person ep ON ep.event_id = e.id
-                WHERE ep.person_id = :userID
-                AND (ep.role IS NULL OR ep.role = "participant")
-                ORDER BY e.date DESC, e.start_time DESC';
+        $sql = 'SELECT id, title, category, date, start_time, end_time, location, picture, startISO, endISO FROM events e INNER JOIN event_person ep
+                ON e.id = ep.event_id WHERE person_id = :userID';
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':userID', $userID, PDO::PARAM_INT);
+
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         $events = [];
         while ($row = $stmt->fetch()) {
             $events[] = new Event(
-                $row["id"], $row["title"], $row["category"], $row["date"],
-                $row["start_time"], $row["end_time"], $row["location"],
-                $row["picture"], $row["startISO"], $row["endISO"], $row["details"]
+                $row["id"],
+                $row["title"],
+                $row["category"],
+                $row["date"],
+                $row["start_time"],
+                $row["end_time"],
+                $row["location"],
+                $row["picture"],
+                $row["startISO"],
+                $row["endISO"]
             );
         }
-        $stmt = null; $conn = null;
+
+        $stmt = null;
+        $conn = null;
+
         return $events;
     }
 }
