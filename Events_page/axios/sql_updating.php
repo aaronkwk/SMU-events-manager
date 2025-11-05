@@ -28,4 +28,9 @@ spl_autoload_register(
         $dao->removeAllEvents($personID);
         echo "All events removed";
     }
+
+    if ($option == "getCount") {
+        $pls_work = $dao->countSavedByEvent($eventID);
+        echo $pls_work;
+    }
 ?>

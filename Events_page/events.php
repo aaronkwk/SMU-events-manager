@@ -27,6 +27,7 @@ if (!isset($_SESSION['username'])){
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="events_style.css">
 
   <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
@@ -34,11 +35,13 @@ if (!isset($_SESSION['username'])){
 <body>
 
 <div class="container py-4">
-  <div class="wbname">
-    <h1>Omni</h1>
-  </div>
-  <br>
+  <div class="wbname d-flex align-items-center justify-content-center">
+    <img src="pictures/omni_logo.png" alt="Omni Logo" class="omni-logo me-2">
+  <h1 class="omni-title mb-0">OMNI</h1>
+</div>
 
+  <br>
+  <a href="statistics.php">TEST</a>
   <nav class="navbar navbar-expand-lg navbar-light" id="navbarid">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -55,6 +58,28 @@ if (!isset($_SESSION['username'])){
   </div>
   </nav>
 
+  <!-- Featured Event Banner -->
+
+  <div class="text-center mb-4">
+    <h2 class="fw-bold" style="color:#041373;">Discover Events at SMU</h2>
+    <p class="text-muted mb-0">Explore events in the school - Find events you like and save them to My Events.</p>
+  </div>
+
+  <!-- TODO : hard coded for now, waiting for shanise code -->
+  <div class="my-4">
+    <div class="event-card accent-sky d-flex flex-column flex-md-row align-items-center p-3">
+      <img src="pictures/hackathon.png" alt="Featured Event" class="event-thumb me-md-3 mb-3 mb-md-0"
+          style="max-width:320px; border-radius:10px;">
+      <div>
+        <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
+        <h3 class="mb-2" style="color:#041373;">HackSMU: 24-Hour Hackathon</h3>
+        <p class="mb-1"><i class="bi bi-calendar-event"></i> 5-6 Dec 2025 • SIS Building</p>
+        <p class="mb-3">Join the biggest hackathon of the year and compete for prizes!</p>
+        <a href="#" class="btn btn-primary btn-sm">View Details</a>
+      </div>
+    </div>
+  </div>
+
   <div class="filters" id="filters">
     <span class="chip accent-grey" data-filter="all">All</span>
     <span class="chip accent-sky" data-filter="tech">Tech</span>
@@ -62,6 +87,7 @@ if (!isset($_SESSION['username'])){
     <span class="chip accent-mint" data-filter="sports">Sports</span>
     <span class="chip accent-lav" data-filter="career">Career</span>
   </div>
+
 
   <div id="eventsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6500">
     <div class="carousel-inner" id="carouselInner"></div>
@@ -359,7 +385,6 @@ function storeEvents(eid) {
     .catch(error => {
         console.log(error.message);
     });
-
 }
 
 /* Initial render */
