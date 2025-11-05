@@ -75,31 +75,59 @@ $events_json = array_map(function($ev) {
     .sidebar {
       background: #041373;
       color: white;
-      min-width: 200px;
+      /* min-width: 155px; */
     }
     
-    .sidebar .nav-link {
-      color: rgba(255,255,255,0.8);
-      padding: 0.75rem 1rem;
-      transition: all 0.2s;
-    }
-    
-    .sidebar .nav-link:hover {
-      color: white;
-      background: rgba(255,255,255,0.1);
-      border-radius: 4px;
-    }
-    
+.sidebar a {
+  display: block;               /* makes the link span full sidebar width */
+  color: rgb(255, 255, 251);
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  /* font-size: 1.1rem; */
+  padding: 8px 0;               /* space above line */
+  transition: color 0.3s ease;  /* smooth text color change */
+}
+
+.sidebar a:hover {
+  color: rgb(191, 156, 96);     /* gold */
+}
+
+/* underline animation */
+.ula {
+  position: relative;           /* keep as block from .sidebar a */
+}
+
+.ula::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;                  /* spans the full link width (i.e., sidebar width) */
+  height: 2px;
+  background-color: rgb(191, 156, 96);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.5s ease-out;
+}
+
+.ula:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
     .top-nav {
       background: white;
       border-bottom: 1px solid #e0e6ed;
     }
     
-    .wbname h1 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #2c3e50;
+    .wbname {
+      color: #041373;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-weight: bolder;
+      font-size: 27.4px;
+      display:flex; align-items:center; justify-content:center;
+      padding: 10px;
+      margin-bottom: 0px;
     }
     
     .new-event-btn {
@@ -258,18 +286,18 @@ $events_json = array_map(function($ev) {
     <!-- Sidebar -->
     <aside class="col-auto sidebar d-flex flex-column p-4">
       <ul class="navbar-nav ps-0">
-        <li><a class="nav-link" href="#">Manage Events</a></li>
-        <li><a class="nav-link" href="#">Statistics</a></li>
-        <li><a class="nav-link" href="#">Chat</a></li>
-        <li><a class="nav-link" href="logout.php">Logout</a></li>
+        <li><a class="nav-link ula" href="manage_events_admin.php">Manage Events</a></li>
+        <li><a class="nav-link ula" href="#">Statistics</a></li>
+        <li><a class="nav-link ula" href="chat.php">Chat</a></li>
+        <li><a class="nav-link ula" href="logout.php">Logout</a></li>
       </ul>
     </aside>
 
     <!-- Main Content -->
     <main class="col d-flex flex-column p-0">
       <header class="top-nav d-flex justify-content-between align-items-center px-4 py-3">
-        <div class="wbname">
-          <h1>Omni</h1>
+        <div>
+          <h1 class="wbname">Omni</h1>
         </div>
         <div class="d-flex align-items-center gap-3">
           <span>Welcome, <?= htmlspecialchars($_SESSION['username']) ?></span>
