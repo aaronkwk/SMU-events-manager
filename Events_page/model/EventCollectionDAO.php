@@ -195,4 +195,30 @@ class EventCollectionDAO
 
         return $events;
     }
+
+    // count for saved events
+    public function countSavedByEvent($eventID) {
+        $connMgr = new ConnectionManager();
+        $conn = $connMgr->getConnection();
+    
+        $sql = 'SELECT COUNT(person_id) AS save_count 
+                FROM event_person 
+                WHERE event_id = :eventID';
+    
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':eventID', $eventID, PDO::PARAM_INT);
+    
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    
+        $count = 0;
+        while ($row = $stmt->fetch()) {
+            $count = $row['save_count'];
+        }
+    
+        $stmt = null;
+        $conn = null;
+    
+        return $count;
+    }
 }
