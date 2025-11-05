@@ -188,27 +188,28 @@ $user_events_json = json_encode($user_events_arr);
       container.appendChild(card);
     });
 
+    let myEventsContainer = document.getElementById("myeventsContainer");
     events.forEach((e) => {
-  const card = document.createElement("div");
-  card.className = "col-md-4";
-  card.innerHTML = `
-    <div class="event-card ${e.category}">
-      <img class="event-thumb" src="${e.picture}" alt="${e.title}">
-      <div class="event-body">
-        <h5 class="event-title mb-0">${e.title}</h5>
-        <ul class="meta-list">
-          <li><i class="bi bi-calendar2-event"></i>${e.date}</li>
-          <li><i class="bi bi-geo-alt"></i>${e.location}</li>
-        </ul>
-        <p id="signups-${e.id}">🔖 Signups: ...</p>
-      </div>
-    </div>
-  `;
-  myEventsContainer.appendChild(card);
+      const card = document.createElement("div");
+      card.className = "col-md-4";
+      card.innerHTML = `
+        <div class="event-card ${e.category}">
+          <img class="event-thumb" src="${e.picture}" alt="${e.title}">
+          <div class="event-body">
+            <h5 class="event-title mb-0">${e.title}</h5>
+            <ul class="meta-list">
+              <li><i class="bi bi-calendar2-event"></i>${e.date}</li>
+              <li><i class="bi bi-geo-alt"></i>${e.location}</li>
+            </ul>
+            <p id="signups-${e.id}">🔖 Signups: ...</p>
+          </div>
+        </div>
+      `;
+      myEventsContainer.appendChild(card);
 
-  // Fetch signup counts
-  getEventCount(e.id);
-});
+      // Fetch signup counts
+      getEventCount(e.id);
+    });
 
 
     function getEventCount(eid) {
@@ -225,7 +226,7 @@ $user_events_json = json_encode($user_events_arr);
         .then(response => {
             console.log(response.data);
             let count = response.data;
-            document.getElementById("signups").innerHTML = ` <strong> Signups : ${count} </strong>`
+            document.getElementById(`signups-${eid}`).innerHTML = ` <strong> Signups : ${count} </strong>`
             
         })
         .catch(error => {
