@@ -1,7 +1,7 @@
 <?php
 class ConnectionManager
 {
-    public function getConnection()
+    public function connect()
     {
         $servername = 'omni-server.mysql.database.azure.com';
         $dbname     = 'omni-db';
