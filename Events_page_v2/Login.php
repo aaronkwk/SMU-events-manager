@@ -2,9 +2,13 @@
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    require_once('db_connect.php');
+    spl_autoload_register(
+    function ($class) {
+        require_once "model/$class.php";
+    }
+);
     $manager = new ConnectionManager();
-    $conn = $manager->connect();
+    $conn = $manager->getConnection();
 
     // Get and sanitize input
     $usernameOrEmail = trim($_POST['username'] ?? '');

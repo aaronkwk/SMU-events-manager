@@ -32,7 +32,7 @@ class ConnectionManager
         } 
         else {
             // Local: use CA certificate
-            $ssl_ca = 'ssl/combined-ca-certificates.pem'; // Your local path
+            $ssl_ca = '/ssl/combined-ca-certificates.pem'; // Your local path
             $options = [
                 PDO::MYSQL_ATTR_SSL_CA => $ssl_ca,
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
