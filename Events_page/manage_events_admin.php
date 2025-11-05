@@ -75,59 +75,31 @@ $events_json = array_map(function($ev) {
     .sidebar {
       background: #041373;
       color: white;
-      /* min-width: 155px; */
+      min-width: 200px;
     }
     
-.sidebar a {
-  display: block;               /* makes the link span full sidebar width */
-  color: rgb(255, 255, 251);
-  text-decoration: none;
-  margin-bottom: 0.75rem;
-  font-weight: 500;
-  /* font-size: 1.1rem; */
-  padding: 8px 0;               /* space above line */
-  transition: color 0.3s ease;  /* smooth text color change */
-}
-
-.sidebar a:hover {
-  color: rgb(191, 156, 96);     /* gold */
-}
-
-/* underline animation */
-.ula {
-  position: relative;           /* keep as block from .sidebar a */
-}
-
-.ula::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;                  /* spans the full link width (i.e., sidebar width) */
-  height: 2px;
-  background-color: rgb(191, 156, 96);
-  transform: scaleX(0);
-  transform-origin: bottom right;
-  transition: transform 0.5s ease-out;
-}
-
-.ula:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
-}
+    .sidebar .nav-link {
+      color: rgba(255,255,255,0.8);
+      padding: 0.75rem 1rem;
+      transition: all 0.2s;
+    }
+    
+    .sidebar .nav-link:hover {
+      color: white;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+    }
+    
     .top-nav {
       background: white;
       border-bottom: 1px solid #e0e6ed;
     }
     
-    .wbname {
-      color: #041373;
-      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-      font-weight: bolder;
-      font-size: 27.4px;
-      display:flex; align-items:center; justify-content:center;
-      padding: 10px;
-      margin-bottom: 0px;
+    .wbname h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2c3e50;
     }
     
     .new-event-btn {
@@ -259,18 +231,12 @@ $events_json = array_map(function($ev) {
       background: white;
       cursor: pointer;
       transition: all 0.2s;
-      color: #212529;
-      text-decoration: none;
+      color: black;
     }
     
     .icon-btn:hover {
       background: #f8f9fa;
       border-color: #adb5bd;
-      color: #212529;
-    }
-    
-    .icon-btn i {
-      color: #212529;
     }
     
     .form-text.mono {
@@ -286,18 +252,18 @@ $events_json = array_map(function($ev) {
     <!-- Sidebar -->
     <aside class="col-auto sidebar d-flex flex-column p-4">
       <ul class="navbar-nav ps-0">
-        <li><a class="nav-link ula" href="manage_events_admin.php">Manage Events</a></li>
-        <li><a class="nav-link ula" href="#">Statistics</a></li>
-        <li><a class="nav-link ula" href="chat.php">Chat</a></li>
-        <li><a class="nav-link ula" href="logout.php">Logout</a></li>
+        <li><a class="nav-link" href="#">Manage Events</a></li>
+        <li><a class="nav-link" href="#">Statistics</a></li>
+        <li><a class="nav-link" href="#">Chat</a></li>
+        <li><a class="nav-link" href="logout.php">Logout</a></li>
       </ul>
     </aside>
 
     <!-- Main Content -->
     <main class="col d-flex flex-column p-0">
       <header class="top-nav d-flex justify-content-between align-items-center px-4 py-3">
-        <div>
-          <h1 class="wbname">Omni</h1>
+        <div class="wbname">
+          <h1>Omni</h1>
         </div>
         <div class="d-flex align-items-center gap-3">
           <span>Welcome, <?= htmlspecialchars($_SESSION['username']) ?></span>
@@ -372,7 +338,6 @@ $events_json = array_map(function($ev) {
           <div class="col-md-6">
             <label class="form-label">Event Image</label>
             <input type="file" class="form-control" name="picture_file" accept="image/*">
-            <div class="form-text mono">Accepted: image/* – Max size depends on php.ini</div>
           </div>
           <div class="col-12">
             <label class="form-label">Details</label>
@@ -485,9 +450,6 @@ function createEventCard(event) {
   const catClass = getCategoryClass(event.category);
   const catLabel = event.category ? event.category.charAt(0).toUpperCase() + event.category.slice(1) : 'Tech';
   
-  // Escape the event data for use in HTML attribute
-  const eventData = JSON.stringify(event).replace(/'/g, '&apos;').replace(/"/g, '&quot;');
-  
   return `
     <div class="event-card">
       <img class="event-thumb" src="${imgSrc}" alt="">
@@ -517,7 +479,7 @@ function createEventCard(event) {
         <a class="icon-btn" href="chat.php?event_id=${event.id}" title="Open chat">
           <i class="bi bi-chat-dots"></i>
         </a>
-        <button class="icon-btn" title="Edit" data-event='${eventData}' onclick='openEdit(this)'>
+        <button class="icon-btn" title="Edit" onclick='openEdit(${JSON.stringify(event)})'>
           <i class="bi bi-pencil-square"></i>
         </button>
         <button class="icon-btn" title="Delete" onclick="doDelete(${event.id})">
@@ -551,9 +513,7 @@ function renderEvents() {
   });
 }
 
-function openEdit(button) {
-  const event = JSON.parse(button.dataset.event.replace(/&quot;/g, '"').replace(/&apos;/g, "'"));
-  
+function openEdit(event) {
   document.getElementById('evIdEdit').value = event.id;
   document.getElementById('evTitleEdit').value = event.title || '';
   document.getElementById('evCategoryEdit').value = (event.category || 'tech').toLowerCase();

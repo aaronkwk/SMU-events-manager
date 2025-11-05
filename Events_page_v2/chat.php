@@ -23,6 +23,8 @@ $userId   = (int)$me['id'];
 $username = (string)$me['username'];
 $isAdmin  = strtolower((string)$me['role']) === 'admin';
 
+$backUrl = $isAdmin ? 'manage_events_admin.php' : 'events.php';
+
 // Chats list: event title + picture (+ channel url if exists)
 $chatsStmt = $db->prepare("
   SELECT 
@@ -56,9 +58,9 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
   <style>
     body{background:#f6f7fb;}
     .app{display:grid; grid-template-columns: 320px 1fr; height:100vh;}
-    .sidebar{border-right:1px solid #e8e8f2; background:#fff; overflow:auto;}
+    .sidebar{border-right:1px solid #e8e8f2; background:#F7F8FA; overflow:auto;}
     .chat-list-item{display:flex; align-items:center; gap:.75rem; padding:.65rem .9rem; border-bottom:1px solid #f1f1f7; cursor:pointer;}
-    .chat-list-item.active{background:#f7f9ff;}
+    .chat-list-item.active{background:rgba(216, 161, 65, 0.48);}
     .avatar{width:40px; height:40px; border-radius:50%; object-fit:cover; background:#eee;}
     .chat-title{font-weight:700; font-size:.98rem; margin:0;}
     .chat-sub{color:#6b7280; font-size:.85rem;}
@@ -66,11 +68,11 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
     .chat-header{display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem; border-bottom:1px solid #e8e8f2; background:#fff;}
     #pinnedBar{display:none; background:#fff6d9; border-bottom:1px dashed #f1d48a; color:#6b5500; padding:.5rem 1rem;}
     #pinnedBar .pin-dismiss{border:none;background:transparent;color:#6b5500;}
-    .messages{flex:1; overflow:auto; padding:1rem;}
-    .msg{max-width:70%; margin-bottom:.75rem; display:flex; flex-direction:column;}
+    .messages{flex:1; overflow:auto; padding:1rem;background: #FAFBFF;}
+    .msg{max-width:70%; margin-bottom:1.5rem; display:flex; flex-direction:column;align-items:flex-start}
     .msg.me{margin-left:auto; align-items:flex-end;}
-    .bubble{background:#fff; border:1px solid #ececf4; padding:.6rem .75rem; border-radius:10px; word-break:break-word;}
-    .msg.me .bubble{background:#e8f3ff; border-color:#d5e8ff;}
+    .bubble{background:rgb(191, 156, 96); border:1px solid #ececf4; padding:.6rem .75rem; border-radius:10px; word-break:break-word;color:white;}
+    .msg.me .bubble{background:#041373; border-color:#d5e8ff;color:white;}
     .meta{color:#6b7280; font-size:.78rem; margin-top:.15rem;}
     .actions{display:flex; gap:.5rem; margin-top:.25rem;}
     .actions .icon{border:none; background:transparent; padding:0; font-size:1rem; color:#6b7280; cursor:pointer;}
@@ -82,15 +84,59 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
     .icon-btn:hover{color:#111827;}
     .hidden{display:none;}
     .badge[data-unread]{min-width:18px;}
+    .inputBox{background: rgb(247, 248, 250);}
+    .btn-outline-darkblue {
+  border-color: #041373 !important;
+  color: #041373 !important;
+}
+.btn-outline-darkblue:hover {
+  background-color: #041373 !important;
+  color: #fff !important;
+}
+    .btn-outline-red{
+  border-color: #e60000 !important;
+  color: #e60000 !important;
+}
+.btn-outline-red:hover {
+  background-color: #e60000!important;
+  color: #fff !important;
+}
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgb(191, 156, 96); 
+  color: white;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.back-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+  color: white;
+}
+
+.back-btn i {
+  font-size: 1.4rem;
+  line-height: 1;
+}
   </style>
 </head>
 <body>
 <div class="app">
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="p-3 border-bottom">
-      <div class="fw-bold">Hi, <?php echo htmlspecialchars($username); ?></div>
-      <div class="text-muted small"><?php echo $isAdmin ? 'Admin' : 'User'; ?></div>
+    <!-- Header bar: back button + Chats title on one line -->
+    <div class="p-3 d-flex align-items-center pb-4 border-bottom">
+      <a href="<?php echo $backUrl; ?>" class="back-btn me-2">
+        <i class="bi bi-arrow-left-short"></i>
+      </a>
+      <div class="fw-bold" style="font-size:1.2rem;">Chats</div>
+      <!-- If you want something on the far right later, add it here and use ms-auto on it -->
     </div>
     <div id="chatList">
       <?php foreach ($chats as $c): 
@@ -128,13 +174,14 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
         <div class="text-muted small" id="headerSub">Group chat</div>
       </div>
 
-      <button class="btn btn-outline-primary btn-sm me-2" id="btnMembers" data-bs-toggle="modal" data-bs-target="#membersModal">
+      <button class="btn btn-outline-darkblue btn-sm me-2" id="btnMembers" data-bs-toggle="modal" data-bs-target="#membersModal">
         <i class="bi bi-people"></i> Members
       </button>
-
-      <button class="btn btn-outline-secondary btn-sm" id="btnLeave" <?php echo $isAdmin ? 'disabled title="Admins cannot leave this group"' : ''; ?>>
-        <i class="bi bi-box-arrow-right"></i> Leave
-      </button>
+      <?php if (!$isAdmin): ?>
+        <button class="btn btn-outline-red btn-sm" id="btnLeave">
+          <i class="bi bi-box-arrow-right"></i> Leave
+        </button>
+      <?php endif; ?>
     </div>
 
     <!-- Pinned bar -->
@@ -153,7 +200,7 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
         <input type="hidden" name="event_id" id="event_id" value="<?php echo $initialEventId; ?>"/>
         <input type="file" name="file" id="fileInput" class="hidden" />
         <button class="icon-btn" type="button" id="attachBtn" title="Attach file"><i class="bi bi-paperclip"></i></button>
-        <textarea class="form-control" name="message" id="message" placeholder="Write a message..."></textarea>
+        <textarea class="form-control inputBox" name="message" id="message" placeholder="Write a message..."></textarea>
         <button class="icon-btn" type="submit" title="Send"><i class="bi bi-send-fill"></i></button>
       </form>
       <div class="small text-muted ms-2" id="fileHint" style="display:none;"></div>
@@ -167,15 +214,12 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
     <div class="modal-content">
       <div class="modal-header">
         <h6 class="modal-title">Group members</h6>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-outline-danger data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div id="membersList" class="list-group small">
           <div class="text-muted">Loading members…</div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -222,7 +266,7 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
     // Pin (admin)
     if (IS_ADMIN) {
       const pinBtn = el('button','icon','');
-      pinBtn.innerHTML = '<i class="bi bi-pin-angle"></i>';
+      pinBtn.innerHTML = '<i class="bi bi-pin-angle" style="color: black;"></i>';
       pinBtn.title = 'Pin';
       pinBtn.onclick = async () => {
         try {
@@ -246,7 +290,7 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
     // Edit (mine, text, <=15m)
     if (isMine && m.message_type !== 'FILE' && ageOk) {
       const eBtn = el('button','icon','');
-      eBtn.innerHTML = '<i class="bi bi-pencil-square"></i>';
+      eBtn.innerHTML = '<i class="bi bi-pencil-square" style="color: #248f24;"></i>';
       eBtn.title = 'Edit';
       eBtn.onclick = async () => {
         const t = prompt('Edit message:', m.message || '');
@@ -265,7 +309,7 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
     // Delete (mine)
     if (isMine) {
       const dBtn = el('button','icon','');
-      dBtn.innerHTML = '<i class="bi bi-trash"></i>';
+      dBtn.innerHTML = '<i class="bi bi-trash" style="color:#e60000;"></i>';
       dBtn.title = 'Delete';
       dBtn.onclick = async () => {
         if(!confirm('Delete this message?')) return;

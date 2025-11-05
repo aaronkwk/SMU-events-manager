@@ -65,19 +65,8 @@ if (!isset($_SESSION['username'])){
     <p class="text-muted mb-0">Explore events in the school - Find events you like and save them to My Events.</p>
   </div>
 
-  <!-- TODO : hard coded for now, waiting for shanise code -->
-  <div class="my-4">
-    <div class="event-card accent-sky d-flex flex-column flex-md-row align-items-center p-3">
-      <img src="pictures/hackathon.png" alt="Featured Event" class="event-thumb me-md-3 mb-3 mb-md-0"
-          style="max-width:320px; border-radius:10px;">
-      <div>
-        <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
-        <h3 class="mb-2" style="color:#041373;">HackSMU: 24-Hour Hackathon</h3>
-        <p class="mb-1"><i class="bi bi-calendar-event"></i> 5-6 Dec 2025 • SIS Building</p>
-        <p class="mb-3">Join the biggest hackathon of the year and compete for prizes!</p>
-        <a href="#" class="btn btn-primary btn-sm">View Details</a>
-      </div>
-    </div>
+  <!-- trending event at the top -->
+  <div id="trending" class="my-4">
   </div>
 
   <div class="filters" id="filters">
@@ -110,7 +99,7 @@ if (!isset($_SESSION['username'])){
   $dao = new EventCollectionDAO();
 
   // all events
-  $events_obj = $dao->getEvents();
+  $all_events_obj = $dao->getEvents();
   $events_arr = array_map(function ($event) {
     return [
       'id' => $event->getId(),
@@ -124,7 +113,7 @@ if (!isset($_SESSION['username'])){
       'startISO' => $event->getStartISO(),
       'endISO' => $event->getEndISO(),
     ];
-  }, $events_obj);
+  }, $all_events_obj);
 
   $events_json = json_encode($events_arr);
 
@@ -155,18 +144,30 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================
    DATA (with ISO datetimes)
    ========================= */
-// const events = [
-//   {title:"HackSMU: 24-Hour Hackathon",dateText:"Fri, 5 Dec 2025",timeText:"7:00 PM → Sat, 7:00 PM",locText:"SIS Building",img:"hackathon.png",categories:["tech"],startISO:"2025-12-05T19:00:00+08:00",endISO:"2025-12-06T19:00:00+08:00"},
-//   {title:"Open Mic & Poetry Slam",dateText:"Fri, 12 Dec 2025",timeText:"8:00–10:30 PM",locText:"Concourse Hall",img:"mic.jpeg",categories:["arts"],startISO:"2025-12-12T20:00:00+08:00",endISO:"2025-12-12T22:30:00+08:00"},
-//   {title:"Finance Forum: Markets 2025",dateText:"Wed, 10 Dec 2025",timeText:"5:30–7:30 PM",locText:"Shaw Alumni House",img:"finance.png",categories:["career"],startISO:"2025-12-10T17:30:00+08:00",endISO:"2025-12-10T19:30:00+08:00"},
-//   {title:"Skatathon 2025",dateText:"Fri, 19 Dec 2025",timeText:"7:00–9:00 PM",locText:"Fort Canning Park",img:"skate.jpeg",categories:["sports"],startISO:"2025-12-19T19:00:00+08:00",endISO:"2025-12-19T21:00:00+08:00"},
-//   {title:"Art Jamming & Chill",dateText:"Sat, 22 Nov 2025",timeText:"2:00–5:00 PM",locText:"Tanjong Hall",img:"art.jpg",categories:["arts"],startISO:"2025-11-22T14:00:00+08:00",endISO:"2025-11-22T17:00:00+08:00"},
-//   {title:"AI & Robotics Demo Day",dateText:"Sat, 6 Dec 2025",timeText:"10:00 AM–1:00 PM",locText:"SMU Labs",img:"robotics.webp",categories:["tech"],startISO:"2025-12-06T10:00:00+08:00",endISO:"2025-12-06T13:00:00+08:00"},
-//   {title:"Eco-Smart Upcycling Workshop",dateText:"Sat, 13 Dec 2025",timeText:"3:00–6:00 PM",locText:"T3 Lobby",img:"upcycling.jpg",categories:["arts"],startISO:"2025-12-13T15:00:00+08:00",endISO:"2025-12-13T18:00:00+08:00"},
-//   {title:"Career Coffee Chats",dateText:"Thu, 4 Dec 2025",timeText:"4:00–6:00 PM",locText:"LKCSB Atrium",img:"chat.webp",categories:["career"],startISO:"2025-12-04T16:00:00+08:00",endISO:"2025-12-04T18:00:00+08:00"}
-// ];
-let events = <?= $events_json ?>;
-console.log(events);
+  let events = <?= $events_json ?>;
+  console.log(events);
+  getAllEventRankings().then(() => {      
+    events.sort((a, b) => b.signups - a.signups);
+    console.log(events);
+    let trendingEvent = events[0];
+    console.log(trendingEvent);
+
+    trendingDiv = document.getElementById("trending");
+    trendingDiv.innerHTML = `
+    <div class="event-card accent-sky d-flex flex-column flex-md-row align-items-center p-3">
+      <img src="${trendingEvent.picture}" alt="Featured Event" class="event-thumb me-md-3 mb-3 mb-md-0"
+          style="max-width:320px; border-radius:10px;">
+      <div>
+        <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
+        <h3 class="mb-2" style="color:#041373;">${trendingEvent.title}</h3>
+        <p class="mb-1"><i class="bi bi-calendar-event"></i> ${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</p>
+        <p class="mb-3">Join the biggest hackathon of the year and compete for prizes!</p>
+        <a href="#" class="btn btn-primary btn-sm">View Details</a>
+      </div>
+    </div>
+    `;
+  });
+
 
 let user_events = <?= $user_events_json ?>;
 console.log(user_events);
@@ -386,6 +387,33 @@ function storeEvents(eid) {
         console.log(error.message);
     });
 }
+
+function getAllEventRankings() {
+  let userID = <?= $currentUser ?>;
+  let url = "axios/sql_updating.php";
+
+  const requestPromises = events.map((event) => {
+    return axios.get(url, { params: 
+      {
+        "personID": userID,
+        "eventID": event.id,
+        "option": "getCount"
+      }
+    })
+    .then(response => {
+      console.log(response.data); 
+      let count = response.data;
+      event.signups = count; 
+    })
+    .catch(error => {
+      console.log(`Error fetching count for event ${event.id}: ${error.message}`);
+      event.signups = 0; // if cannot find data
+    });
+});
+
+  return Promise.all(requestPromises);
+}
+
 
 /* Initial render */
 applyFilter();
