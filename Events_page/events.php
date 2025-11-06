@@ -155,18 +155,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     trendingDiv = document.getElementById("trending");
     trendingDiv.innerHTML = `
-    <div class="event-card accent-sky d-flex flex-column flex-md-row align-items-center p-3">
-      <img src="${trendingEvent.picture}" alt="Featured Event" class="event-thumb me-md-3 mb-3 mb-md-0"
-          style="max-width:320px; border-radius:10px;">
-      <div>
-        <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
-        <h3 class="mb-2" style="color:#041373;"><strong>${trendingEvent.title}</strong></h3>
-        <p class="mb-1" style="color:goldenrod;"><i class="bi bi-calendar-event"></i> <strong>${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</strong></p>
-        <p class="mb-3">${trendingEvent.details}</p>
-        <a href="#" class="btn btn-primary btn-sm">View Details</a>
-      </div>
-    </div>
-    `;
+     <div class="featured-event" onclick="showSignInPrompt()">
+        <div class="featured-image">
+          <img src="${trendingEvent.picture}" alt="${trendingEvent.title}">
+        </div>
+        <div class="featured-details">
+          <span class="trending-badge"><i class="bi bi-lightning-fill"></i> Featured Event</span>
+          <h3>${trendingEvent.title}</h3>
+          <div class="event-meta">
+            <div class="event-meta-item">
+              <i class="bi bi-calendar-event"></i>
+              <span>${formatDate(trendingEvent.date)}</span>
+            </div>
+            <div class="event-meta-item">
+              <i class="bi bi-clock"></i>
+              <span>${trendingEvent.start_time} - ${trendingEvent.end_time}</span>
+            </div>
+            <div class="event-meta-item">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span>${trendingEvent.location}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
 
     // render the carousel all events
     applyFilter();
