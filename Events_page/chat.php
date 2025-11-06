@@ -570,11 +570,12 @@ body {
   }
 
   async function fetchMessages(){
-    let currentEventId = Number(currentEventId);
+    console.log(currentEventId);
     if (!currentEventId) return;
     try {
-      const res = await fetch(`chat_fetch.php?event_id=${currentEventId}`);
+      const res = await fetch(`chat_fetch.php?event_id=${Number(currentEventId)}`);
       const js  = await res.json();
+      console.log(currentEventId);
       if (js && Array.isArray(js.messages)) render(js.messages);
       else render([]);
     } catch(e){ console.error(e); }
