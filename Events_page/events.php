@@ -37,7 +37,7 @@ if (!isset($_SESSION['username'])){
 <div class="container py-4">
   <div class="wbname d-flex align-items-center justify-content-center">
     <img src="pictures/omni_logo.png" alt="Omni Logo" class="omni-logo me-2">
-  <h1 class="omni-title mb-0">OMNIs</h1>
+  <h1 class="omni-title mb-0">OMNI</h1>
 </div>
 
   <br>
@@ -61,7 +61,7 @@ if (!isset($_SESSION['username'])){
   <!-- Featured Event Banner -->
 
   <div class="text-center mb-4">
-    <h2 class="fw-bold" style="color:#041373;">Discover Events at SMU</h2>
+    <h2 class="fw-bold" style="color:#041373;">Discover Events at SMU ww</h2>
     <p class="text-muted mb-0"><strong>Explore events in the school - Find events you like and save them to My Events.</strong></p>
   </div>
 
