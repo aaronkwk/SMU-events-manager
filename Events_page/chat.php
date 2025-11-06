@@ -638,76 +638,25 @@ body {
   });
 
 
-  // Replace the sendForm event listener in chat.php with this:
-
-sendForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  console.log('=== SEND FORM SUBMIT ===');
-  console.log('Current Event ID:', currentEventId);
-  
-  if (!currentEventId) {
-    alert('No chat selected');
-    return;
-  }
-  
-  const fd = new FormData(sendForm);
-  fd.set('event_id', String(currentEventId));
-  
-  // Debug: log what we're sending
-  console.log('FormData contents:');
-  for (let [key, value] of fd.entries()) {
-    if (value instanceof File) {
-      console.log(`  ${key}: [File] ${value.name} (${value.size} bytes)`);
-    } else {
-      console.log(`  ${key}: ${value}`);
-    }
-  }
-  
-  try {
-    console.log('Sending to chat_send.php...');
-    const res = await fetch('chat_send.php', { 
-      method: 'POST', 
-      body: fd 
-    });
-    
-    console.log('Response status:', res.status);
-    console.log('Response ok:', res.ok);
-    
-    const contentType = res.headers.get('content-type');
-    console.log('Response content-type:', contentType);
-    
-    let js = null;
-    const text = await res.text();
-    console.log('Response text:', text.substring(0, 500));
-    
+  sendForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentEventId) return;
+    const fd = new FormData(sendForm);
+    fd.set('event_id', String(currentEventId));
     try {
-      js = JSON.parse(text);
-      console.log('Parsed JSON:', js);
-    } catch (parseErr) {
-      console.error('JSON parse error:', parseErr);
-      console.log('Raw response was:', text);
-    }
-    
-    if (res.ok && (!js || !js.error)) {
-      console.log('✓ Message sent successfully');
-      sendForm.message.value = '';
-      fileInput.value = '';
-      fileHint.style.display = 'none';
-      await fetchMessages();
-      await markCurrentAsRead();
-    } else {
-      const errMsg = (js && js.error) ? js.error : `Send failed (HTTP ${res.status})`;
-      console.error('✗ Send failed:', errMsg);
-      alert(errMsg);
-    }
-  } catch (err) {
-    console.error('✗ Exception during send:', err);
-    alert('Network error: ' + err.message);
-  }
-  
-  console.log('=== SEND FORM COMPLETE ===');
-});
+      const res = await fetch('chat_send.php', { method:'POST', body: fd });
+      const js  = await res.json().catch(()=>null);
+      if (res.ok) {
+        sendForm.message.value = '';
+        fileInput.value = '';
+        fileHint.style.display='none';
+        await fetchMessages();
+        await markCurrentAsRead();
+      } else {
+        alert((js && js.error) ? js.error : 'Send failed');
+      }
+    } catch (err) { console.error(err); alert('Send failed'); }
+  });
 
   // ----- Switch chats
   chatListEl.addEventListener('click', (e) => {
