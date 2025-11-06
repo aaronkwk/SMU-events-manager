@@ -21,3 +21,5 @@ For Admin:
 1. Once logged in, you can see all your events, past ongoing and future
 2. You can edit you events, remove them by clicking on the icons within the event cards
 3. Through the side navbar, you can proceed to the statistics page where you can see the top 3 events and your events statistics
+
+Use of AI: We used AI to brainstorm and fix styling and logic.
