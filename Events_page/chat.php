@@ -429,6 +429,7 @@ body {
 <script>
   const IS_ADMIN = <?php echo $isAdmin ? 'true' : 'false'; ?>;
   const MY_SB_USER_ID = "user_<?php echo (int)$userId; ?>";
+  let currentEventId;
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
