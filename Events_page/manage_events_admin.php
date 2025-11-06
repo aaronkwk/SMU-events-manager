@@ -65,7 +65,7 @@ $events_json = array_map(function($ev) {
   <style>
     body {
       background: #f5f7fa;
-      /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; */
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
     }
     
     .container-fluid {

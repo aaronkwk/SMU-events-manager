@@ -404,8 +404,8 @@ $user_events_json = json_encode($user_events_arr);
       <!-- Sidebar -->
       <aside class="col-auto sidebar d-flex flex-column p-4">
         <ul class="navbar-nav ps-0">
-          <li><a class="nav-link ula" href="manage_events_admin.php">Manage Events</a></li>
-          <li><a class="nav-link ula" href="statistics.php">Statistics</a></li>
+          <li><a class="nav-link ula" href="manage_events_admin.php" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Manage Events</a></li>
+          <li><a class="nav-link ula" href="statistics.php" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Statistics</a></li>
         </ul>
       </aside>
 
