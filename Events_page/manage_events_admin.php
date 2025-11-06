@@ -277,6 +277,35 @@ $events_json = array_map(function($ev) {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 0.8rem;
     }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .omni-logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(4, 19, 115, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .omni-logo:hover {
+      transform: translateY(-3px) rotate(5deg);
+      box-shadow: 0 10px 30px rgba(4, 19, 115, 0.3);
+    }
+
+    .logo-text {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #041373 0%, rgb(191, 156, 96) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
   </style>
 </head>
 <body>
@@ -295,8 +324,9 @@ $events_json = array_map(function($ev) {
     <!-- Main Content -->
     <main class="col d-flex flex-column p-0">
       <header class="top-nav d-flex justify-content-between align-items-center px-4 py-3">
-        <div>
-          <h1 class="wbname">Omni</h1>
+        <div class="logo">
+          <img src="pictures/omni_logo.png" alt="Omni Logo" class="omni-logo">
+          <div class="logo-text">OMNI</div>
         </div>
         <div class="d-flex align-items-center gap-3">
           <span>Welcome, <?= htmlspecialchars($_SESSION['username']) ?></span>
