@@ -95,6 +95,60 @@ if (!isset($_SESSION['username'])){
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<div id="detailsOverlay" class="auth-overlay">
+    <div class="auth-modal-card">
+        <button class="close-btn" onclick="closeDetailsModal();">X</button>
+
+        <div>
+            <h2 class="h3 mb-3 brand" id="modal-title">
+                Example Event Title
+            </h2>
+
+            <div class="row g-4">
+
+                <div class="col-md-5">
+                    <img id="modal-picture" src="https://via.placeholder.com/500x300.png?text=Event+Image"
+                        class="img-fluid rounded" alt="Event picture">
+                </div>
+
+                <div class="col-md-7 d-flex flex-column">
+
+                    <div>
+                        <p class="mb-2">
+                            <strong>Category:</strong>
+                            <span id="modal-category">Conference</span>
+                        </p>
+                        <p class="mb-2">
+                            <strong>Date:</strong>
+                            <span id="modal-date">December 1, 2025</span>
+                        </p>
+                        <p class="mb-2">
+                            <strong>Time:</strong>
+                            <span id="modal-time">9:00 AM - 5:00 PM</span>
+                        </p>
+                        <p class="mb-3">
+                            <strong>Location:</strong>
+                            <span id="modal-location">The Grand Hall</span>
+                        </p>
+                    </div>
+
+                    <hr>
+
+                    <div class="flex-grow-1">
+                        <h4 class="h5">About this event</h4>
+                        <p id="modal-details">
+                            This is where the main details of the event will go. It can be a long block of text
+                            describing all the activities, speakers, and information for attendees.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <?php
   $dao = new EventCollectionDAO();
 
@@ -142,11 +196,51 @@ if (!isset($_SESSION['username'])){
 
 ?>
 <script>
+function formatDate(startISO) {
+  const optsDate = {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  };
+  const optsTime = { hour:'2-digit', minute:'2-digit' };
+
+  let s = new Date(startISO);
+  let dateText = s.toLocaleDateString(undefined, optsDate);
+  return dateText;
+}
+let events = <?= $events_json ?>;
+function openDetailsModal(eventID) {
+    events.forEach((event) => {
+      if (eventID == event.id) {
+        document.getElementById('modal-title').innerText = event.title;
+        document.getElementById('modal-picture').src = event.picture;
+        document.getElementById('modal-category').innerText = event.category;
+        document.getElementById('modal-date').innerText = formatDate(event.startISO);
+        document.getElementById('modal-time').innerText = `${event.start_time} - ${event.end_time}`;
+        document.getElementById('modal-location').innerText = event.location;
+        document.getElementById('modal-details').innerText = event.details;
+    
+        // 2. Show the modal
+        document.getElementById('detailsOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+      }
+    });
+    console.log("ran");
+    // 1. Populate the data
+}
+
+function closeDetailsModal() {
+    document.getElementById('detailsOverlay').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 /* =========================
    DATA (with ISO datetimes)
    ========================= */
-  let events = <?= $events_json ?>;
+   
   console.log(events);
   getAllEventRankings().then(() => {      
     events.sort((a, b) => b.signups - a.signups);
@@ -247,19 +341,6 @@ function googleCalUrl({title, startISO, endISO, location, details=""}){
   return u.toString();
 }
 
-function formatDate(startISO) {
-  const optsDate = {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  };
-  const optsTime = { hour:'2-digit', minute:'2-digit' };
-
-  let s = new Date(startISO);
-  let dateText = s.toLocaleDateString(undefined, optsDate);
-  return dateText;
-}
 /* =========================
    UI templates & rendering
    ========================= */
@@ -287,7 +368,7 @@ function cardTemplate(e, isSaved, hasClashAgainstOthers){
       <li><i class="bi bi-geo-alt"></i>${e.location}</li>
     </ul>
     <div class="event-actions d-flex gap-2 flex-wrap">
-      <a class="btn btn-outline-secondary btn-sm" href="#">Details</a>
+      <a class="btn btn-outline-secondary btn-sm" href="#" onclick="openDetailsModal(${e.id})">Details</a>
       <button class="${saveBtnClasses}"
          type="button"
          ${saveDisabled}
@@ -475,6 +556,7 @@ function getAllEventRankings() {
 
   return Promise.all(requestPromises);
 }
+
 
 
 /* Initial render */
