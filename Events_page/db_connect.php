@@ -5,7 +5,7 @@ class ConnectionManager
     {
         $servername = 'omni-server.mysql.database.azure.com';
         $dbname     = 'omni-db';
-        $username   = 'zevoevjtfj';            // Try 'zevoevjtfj@omni-server' if auth fails
+        $username   = 'zevoevjtfj@omni-server';            // Try 'zevoevjtfj@omni-server' if auth fails
         $password   = 'passwordOmni1';
         $port       = 3306;
 
