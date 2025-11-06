@@ -75,23 +75,24 @@ $events_json = array_map(function($ev) {
     .sidebar {
       background: #041373;
       color: white;
-      /* min-width: 155px; */
+      min-width: 200px;
+      position: relative;
+      z-index: 1;
     }
-    
-.sidebar a {
-  display: block;               /* makes the link span full sidebar width */
-  color: rgb(255, 255, 251);
-  text-decoration: none;
-  margin-bottom: 0.75rem;
-  font-weight: 500;
-  /* font-size: 1.1rem; */
-  padding: 8px 0;               /* space above line */
-  transition: color 0.3s ease;  /* smooth text color change */
-}
 
-.sidebar a:hover {
-  color: rgb(191, 156, 96);     /* gold */
-}
+    .sidebar a {
+      display: block;
+      color: rgb(255, 255, 251);
+      text-decoration: none;
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+      padding: 8px 0;
+      transition: color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      color: rgb(191, 156, 96);
+    }
 
 /* underline animation */
 .ula {
