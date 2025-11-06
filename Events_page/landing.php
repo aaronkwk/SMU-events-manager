@@ -16,9 +16,10 @@ $events_arr = array_map(function ($event) {
       'start_time' => $event->getStartTime(),
       'end_time' => $event->getEndTime(),
       'location' => $event->getLocation(),
+      'details' => $event->getDetails(),
       'picture' => $event->getPicture(),
       'startISO' => $event->getStartISO(),
-      'endISO' => $event->getEndISO(),
+      'endISO' => $event->getEndISO()
     ];
 }, $all_events_obj);
 
@@ -121,8 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
     `;
 
-    // render the carousel all events
-    applyFilter();
   });
 
 
