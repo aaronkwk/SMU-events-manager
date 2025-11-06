@@ -56,36 +56,259 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
   <style>
-    body{background:#f6f7fb;}
-    .app{display:grid; grid-template-columns: 320px 1fr; height:100vh;}
-    .sidebar{border-right:1px solid #e8e8f2; background:#F7F8FA; overflow:auto;}
-    .chat-list-item{display:flex; align-items:center; gap:.75rem; padding:.65rem .9rem; border-bottom:1px solid #f1f1f7; cursor:pointer;}
-    .chat-list-item.active{background:rgba(216, 161, 65, 0.48);}
-    .avatar{width:40px; height:40px; border-radius:50%; object-fit:cover; background:#eee;}
-    .chat-title{font-weight:700; font-size:.98rem; margin:0;}
-    .chat-sub{color:#6b7280; font-size:.85rem;}
-    .main{display:flex; flex-direction:column;}
-    .chat-header{display:flex; align-items:center; gap:.75rem; padding:.75rem 1rem; border-bottom:1px solid #e8e8f2; background:#fff;}
-    #pinnedBar{display:none; background:#fff6d9; border-bottom:1px dashed #f1d48a; color:#6b5500; padding:.5rem 1rem;}
-    #pinnedBar .pin-dismiss{border:none;background:transparent;color:#6b5500;}
-    .messages{flex:1; overflow:auto; padding:1rem;background: #FAFBFF;}
-    .msg{max-width:70%; margin-bottom:1.5rem; display:flex; flex-direction:column;align-items:flex-start}
-    .msg.me{margin-left:auto; align-items:flex-end;}
-    .bubble{background:rgb(191, 156, 96); border:1px solid #ececf4; padding:.6rem .75rem; border-radius:10px; word-break:break-word;color:white;}
-    .msg.me .bubble{background:#041373; border-color:#d5e8ff;color:white;}
-    .meta{color:#6b7280; font-size:.78rem; margin-top:.15rem;}
-    .actions{display:flex; gap:.5rem; margin-top:.25rem;}
-    .actions .icon{border:none; background:transparent; padding:0; font-size:1rem; color:#6b7280; cursor:pointer;}
-    .actions .icon:hover{color:#111827;}
-    .composer{border-top:1px solid #e8e8f2; padding:.5rem; background:#fff;}
-    .composer .bar{display:flex; gap:.5rem; align-items:center;}
-    .composer textarea{resize:none; height:46px;}
-    .icon-btn{border:none; background:transparent; padding:.375rem .5rem; font-size:1.25rem; cursor:pointer; color:#374151;}
-    .icon-btn:hover{color:#111827;}
-    .hidden{display:none;}
-    .badge[data-unread]{min-width:18px;}
-    .inputBox{background: rgb(247, 248, 250);}
-    .btn-outline-darkblue {
+body {
+  background: #f6f7fb;
+}
+.app {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: 100vh;
+}
+
+:root {
+  --navy: #0F1A4A;          /* sidebar bg */
+  --navy-hover: #14265a;    /* subtle hover */
+  --gold: #BF9C60;          /* accent */
+  --hairline: rgba(255,255,255,.14);
+  --hairline-strong: rgba(255,255,255,.22);
+  --text: #FFFFFF;
+  --muted: rgba(255,255,255,.72);
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  background: linear-gradient(180deg, #0f1a4bff 0%, #091030 100%);
+  border-right: 1px solid rgba(255,255,255,.08);
+  overflow: auto;
+}
+
+/* Sticky header (Chats + Back button) */
+.sidebar .p-3 {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--navy);
+  padding: .9rem 16px !important;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* Back button */
+.back-btn {
+  width: 28.5px;
+  height: 28.5px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.back-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 4px rgba(191,156,96,.18);
+  color: #fff;
+}
+.back-btn i {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Chat list container */
+#chatList {
+  padding: 6px 0 12px;
+}
+
+/* Flat list items (no rounded boxes) */
+.chat-list-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .8rem 16px;
+  color: #fff;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color .12s ease;
+}
+
+/* Divider line under each item */
+.chat-list-item::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 1px;
+  background: var(--hairline);
+  pointer-events: none;
+}
+
+/* Hover */
+.chat-list-item:hover {
+  background: var(--navy-hover);
+}
+
+/* Active chat (flat + gold bar + subtle glow) */
+.chat-list-item.active {
+  background: linear-gradient(0deg, rgba(255,255,255,.06), rgba(255,255,255,.06));
+  box-shadow: inset 3px 0 0 0 var(--gold);
+}
+.chat-list-item.active::after {
+  opacity: 0;
+}
+
+/* Avatar */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+  border: 2px solid transparent;
+  transition: border-color .12s ease;
+}
+.chat-list-item.active .avatar {
+  border-color: rgba(191,156,96,.65);
+}
+
+/* Chat titles */
+.chat-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: .98rem;
+  color: #fff;
+}
+.chat-sub {
+  color: rgba(255,255,255,.72);
+  font-size: .84rem;
+  margin-top: 2px;
+}
+
+/* Unread badge */
+.badge[data-unread] {
+  min-width: 20px;
+  border-radius: 999px;
+  padding: .15rem .45rem;
+  font-weight: 700;
+  background: var(--gold);
+  color: #111;
+}
+
+/* ===== Main section ===== */
+.main {
+  display: flex;
+  flex-direction: column;
+}
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid #e8e8f2;
+  background: #fff;
+}
+#pinnedBar {
+  display: none;
+  background: #fff6d9;
+  border-bottom: 1px dashed #f1d48a;
+  color: #6b5500;
+  padding: .5rem 1rem;
+}
+#pinnedBar .pin-dismiss {
+  border: none;
+  background: transparent;
+  color: #6b5500;
+}
+.messages {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem;
+  background: #FAFBFF;
+}
+.msg {
+  max-width: 70%;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.msg.me {
+  margin-left: auto;
+  align-items: flex-end;
+}
+.bubble {
+  background: rgb(191, 156, 96);
+  border: 1px solid #ececf4;
+  padding: .6rem .75rem;
+  border-radius: 10px;
+  word-break: break-word;
+  color: white;
+}
+.msg.me .bubble {
+  background: #041373;
+  border-color: #d5e8ff;
+  color: white;
+}
+.meta {
+  color: #6b7280;
+  font-size: .78rem;
+  margin-top: .15rem;
+}
+.actions {
+  display: flex;
+  gap: .5rem;
+  margin-top: .25rem;
+}
+.actions .icon {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 1rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+.actions .icon:hover {
+  color: #111827;
+}
+.composer {
+  border-top: 1px solid #e8e8f2;
+  padding: .5rem;
+  background: #fff;
+}
+.composer .bar {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+.composer textarea {
+  resize: none;
+  height: 46px;
+}
+.icon-btn {
+  border: none;
+  background: transparent;
+  padding: .375rem .5rem;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #374151;
+}
+.icon-btn:hover {
+  color: #111827;
+}
+.hidden {
+  display: none;
+}
+.badge[data-unread] {
+  min-width: 18px;
+}
+.inputBox {
+  background: rgb(247, 248, 250);
+}
+
+/* ===== Buttons ===== */
+.btn-outline-darkblue {
   border-color: #041373 !important;
   color: #041373 !important;
 }
@@ -93,37 +316,16 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
   background-color: #041373 !important;
   color: #fff !important;
 }
-    .btn-outline-red{
+.btn-outline-red {
   border-color: #e60000 !important;
   color: #e60000 !important;
 }
 .btn-outline-red:hover {
-  background-color: #e60000!important;
+  background-color: #e60000 !important;
   color: #fff !important;
 }
-.back-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: rgb(191, 156, 96); 
-  color: white;
-  text-decoration: none;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
 
-.back-btn:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-  color: white;
-}
 
-.back-btn i {
-  font-size: 1.4rem;
-  line-height: 1;
-}
   </style>
 </head>
 <body>
@@ -131,11 +333,11 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
   <!-- Sidebar -->
   <aside class="sidebar">
     <!-- Header bar: back button + Chats title on one line -->
-    <div class="p-3 d-flex align-items-center pb-4 border-bottom">
+    <div class="p-3 d-flex align-items-center" style="border-bottom:2px solid rgba(191, 156, 96, 1); padding-bottom:16.2px !important;">
       <a href="<?php echo $backUrl; ?>" class="back-btn me-2">
         <i class="bi bi-arrow-left-short"></i>
       </a>
-      <div class="fw-bold" style="font-size:1.2rem;">Chats</div>
+      <div style="font-size:1.5rem; color:white;">Chats</div>
       <!-- If you want something on the far right later, add it here and use ms-auto on it -->
     </div>
     <div id="chatList">
@@ -152,7 +354,6 @@ $initialPic     = !empty($chats) ? (string)$chats[0]['event_picture'] : '';
         <img class="avatar" src="<?php echo htmlspecialchars($pic); ?>" alt="grp"/>
         <div class="me-auto">
           <p class="chat-title mb-0"><?php echo htmlspecialchars($title); ?></p>
-          <div class="chat-sub">Tap to open</div>
         </div>
         <div class="ms-2">
           <span class="badge text-bg-primary" data-unread style="display:none">0</span>
