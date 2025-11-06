@@ -570,12 +570,10 @@ body {
   }
 
   async function fetchMessages(){
-    console.log(currentEventId);
     if (!currentEventId) return;
     try {
-      const res = await fetch(`chat_fetch.php?event_id=${Number(currentEventId)}`);
+      const res = await fetch(`chat_fetch.php?event_id=${currentEventId}`);
       const js  = await res.json();
-      console.log(currentEventId);
       if (js && Array.isArray(js.messages)) render(js.messages);
       else render([]);
     } catch(e){ console.error(e); }
@@ -583,7 +581,6 @@ body {
 
   // ----- Pinned helpers
   async function loadPinned(){
-    let currentEventId = Number(currentEventId);
   if (!currentEventId) return;
   try{
     const res = await fetch(`chat_meta.php?event_id=${currentEventId}`);
@@ -598,7 +595,6 @@ body {
 }
 
   if (btnUnpin) {
-    let currentEventId = Number(currentEventId);
     btnUnpin.addEventListener('click', async ()=>{
       try{
         const fd = new FormData();
@@ -612,7 +608,6 @@ body {
   }
 
   async function bootstrapOnce(){
-    let currentEventId = Number(currentEventId);
     if (!currentEventId) return;
     try { await fetch(`chat_bootstrap.php?event_id=${currentEventId}`); } catch(_){}
   }
@@ -680,7 +675,6 @@ body {
 
   // ----- Leave (disabled for admin)
   if (btnLeave) {
-    let currentEventId = Number(currentEventId);
     btnLeave.addEventListener('click', async () => {
       if (!currentEventId || IS_ADMIN) return;
       if (!confirm('Leave this group?')) return;
@@ -707,7 +701,6 @@ body {
   // ----- Members modal: ensure bootstrap + encode-safe server calls
   function ensureMembersModal(){ if (!membersModal) membersModal = new bootstrap.Modal(membersModalEl); }
   async function loadMembers(){
-    let currentEventId = Number(currentEventId);
     membersList.innerHTML = '<div class="text-muted">Loading…</div>';
     try{
       const res = await fetch(`chat_members.php?event_id=${currentEventId}`);
@@ -746,7 +739,6 @@ body {
     }catch(e){ membersList.innerHTML = '<div class="text-danger">Failed to load members</div>'; }
   }
   async function openMembers(){
-    let currentEventId = Number(currentEventId);
     ensureMembersModal();
     try { await fetch(`chat_bootstrap.php?event_id=${currentEventId}`); } catch(_){}
     await loadMembers();
@@ -775,7 +767,6 @@ body {
     }catch(e){}
   }
   async function markCurrentAsRead(){
-    let currentEventId = Number(currentEventId);
     try{ await fetch(`chat_unread.php?action=mark&event_id=${currentEventId}`); }catch(e){}
   }
 
