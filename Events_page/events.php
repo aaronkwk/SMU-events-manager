@@ -367,12 +367,35 @@ document.addEventListener('click', (e) => {
     if (clashesWithOthers(item, mine)) return; // block on clash
     if (!mine.some(m => keyOf(m) === keyOf(item))) {
       mine.push(item);
-      // saveMyEvents(mine);  // add event to sql event_person table
+      // add event to sql event_person table
       storeEvents(item.id);
+      // and then add points to users table
+      addPoints(item.id);
+
     }
     applyFilter(); // refresh to update Saved/disabled states
   }
 });
+
+function addPoints(eid) {
+  let userID = <?= $currentUser ?>;
+  let url = "axios/sql_updating.php";
+
+  axios.get(url, { params:
+    {
+    "personID": userID,
+    "eventID": eid,
+    "option": "addPts"
+    }
+  })
+    .then(response => {
+        console.log(response);
+        
+    })
+    .catch(error => {
+        console.log(error.message);
+    });
+}
 
 function storeEvents(eid) {
   let userID = <?= $currentUser ?>;

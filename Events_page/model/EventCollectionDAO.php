@@ -224,4 +224,31 @@ class EventCollectionDAO
     
         return $count;
     }
+
+    // add points to user
+    public function addPoints($personID) {
+        $connMgr = new ConnectionManager();
+		$conn = $connMgr->getConnection();
+
+		$sql = 'UPDATE users SET points = points+10 WHERE id = :personID';
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(':personID', $personID, PDO::PARAM_INT);
+
+		$stmt->execute();
+		$stmt = null;
+		$conn = null;
+    }
+
+    public function removePoints($personID) {
+        $connMgr = new ConnectionManager();
+		$conn = $connMgr->getConnection();
+
+		$sql = 'UPDATE users SET points = points-10 WHERE id = :personID';
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(':personID', $personID, PDO::PARAM_INT);
+
+		$stmt->execute();
+		$stmt = null;
+		$conn = null;
+    }
 }

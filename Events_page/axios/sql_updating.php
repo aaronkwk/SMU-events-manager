@@ -33,4 +33,14 @@ spl_autoload_register(
         $pls_work = $dao->countSavedByEvent($eventID);
         echo $pls_work;
     }
+
+    if ($option == "addPts") {
+        $dao->addPoints($personID);
+        echo "Points added to ID: $personID";
+    }
+
+    if ($option == "removePts") {
+        $dao->removePoints($personID);
+        echo "Points removed from ID: $personID";
+    }
 ?>
