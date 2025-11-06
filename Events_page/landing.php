@@ -40,6 +40,7 @@ $events_json = json_encode($events_arr);
 <link rel="stylesheet" type="text/css" href="landing_style.css">
 <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
 </head>
+
 <body>
 <div class="page-container">
   <div class="header-row">
@@ -54,7 +55,7 @@ $events_json = json_encode($events_arr);
   </div>
   
   <div class="hero-section">
-    <h1>Discover Events at SMUsss</h1>
+    <h1>Discover Events at SMU</h1>
     <p class="subtitle">Explore exciting events happening around campus - Find events you like and save them to My Events.</p>
   </div>
 

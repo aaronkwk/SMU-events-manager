@@ -61,7 +61,7 @@ if (!isset($_SESSION['username'])){
   <!-- Featured Event Banner -->
 
   <div class="text-center mb-4">
-    <h2 class="fw-bold" style="color:#041373;">Discover Events at SMU</h2>
+    <h2 class="fw-bold" style="color:#041373;">Discover Events at SMU Testing</h2>
     <p class="text-muted mb-0"><strong>Explore events in the school - Find events you like and save them to My Events.</strong></p>
   </div>
 
@@ -213,7 +213,7 @@ console.log(user_events);
    Local “My Events” store
    ========================= */
 const MY_EVENTS_KEY = 'smu_my_events_v1';
-const loadMyEvents = user_events;
+let loadMyEvents = user_events;
 
 const keyOf = (ev) => `${ev.title}__${ev.startISO}`;
 
