@@ -289,7 +289,6 @@ $events_json = array_map(function($ev) {
         <li><a class="nav-link ula" href="manage_events_admin.php">Manage Events</a></li>
         <li><a class="nav-link ula" href="#">Statistics</a></li>
         <li><a class="nav-link ula" href="chat.php">Chat</a></li>
-        <li><a class="nav-link ula" href="logout.php">Logout</a></li>
       </ul>
     </aside>
 
