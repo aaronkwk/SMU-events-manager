@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 // manage_events_admin.php – Kanban-style board with past/ongoing/future events
 declare(strict_types=1);
 session_start();
