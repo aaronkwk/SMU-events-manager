@@ -173,13 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCarousel(events);
 
   function getAllEventRankings() {
-    let userID = <?= $currentUser ?>;
     let url = "axios/sql_updating.php";
 
     const requestPromises = events.map((event) => {
       return axios.get(url, { params: 
         {
-          "personID": userID,
           "eventID": event.id,
           "option": "getCount"
         }
