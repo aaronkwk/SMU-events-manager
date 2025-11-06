@@ -230,16 +230,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     /* Buttons & divider */
     .btn-cta{ width:100%; padding:.9rem; border:none; border-radius:2rem; font-weight:800; background:var(--gold); color:#1a1a1a; }
     .btn-cta:hover{ background:#d6a21e; }
-    .btn-google{
-      display:flex; align-items:center; justify-content:center; gap:.6rem;
-      width:100%; border:1px solid #e3e5ef; background:#fff;
-      border-radius:2rem; padding:.8rem 1rem; font-weight:600; color:#1f2340; transition:box-shadow .2s ease;
-    }
-    .btn-google:hover{ box-shadow:0 6px 18px rgba(0,0,0,.08); }
-    .btn-google img{ width:20px; height:20px; }
-    .divider { display:flex; align-items:center; gap:.75rem; color:#8d93b5; font-size:.9rem; }
-    .divider:before, .divider:after { content:""; flex:1; height:1px; background:#e9eaf6; }
-
+    
     /* Tooltips */
     .tooltip-inner{ background:#f2f2f2; color:#333; font-weight:500; }
     .bs-tooltip-auto .tooltip-arrow::before, .bs-tooltip-top .tooltip-arrow::before{ border-top-color:#f2f2f2!important; }
@@ -338,11 +329,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           </div>
 
           <button class="btn btn-cta mt-3" type="submit">Create Account</button>
-
-          <div class="my-3 divider">Or continue with</div>
-          <button type="button" class="btn btn-google" title="Sign up with Google">
-            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_64dp.png" alt="Google"> Google
-          </button>
 
           <p class="mt-3 text-center text-muted">
             Already registered? <a class="link" href="Login.php">Sign in</a>
