@@ -288,7 +288,7 @@ $events_json = array_map(function($ev) {
       <ul class="navbar-nav ps-0">
         <li><a class="nav-link ula" href="manage_events_admin.php">Manage Events</a></li>
         <li><a class="nav-link ula" href="statistics.php">Statistics</a></li>
-        <li><a class="nav-link ula" href="chat.php">Chat</a></li>
+        <!-- <li><a class="nav-link ula" href="chat.php">Chat</a></li> -->
       </ul>
     </aside>
 
@@ -513,9 +513,6 @@ function createEventCard(event) {
         </div>` : ''}
       </div>
       <div class="event-actions">
-        <a class="icon-btn" href="chat.php?event_id=${event.id}" title="Open chat">
-          <i class="bi bi-chat-dots"></i>
-        </a>
         <button class="icon-btn" title="Edit" data-event='${eventData}' onclick='openEdit(this)'>
           <i class="bi bi-pencil-square"></i>
         </button>
