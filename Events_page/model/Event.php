@@ -8,13 +8,14 @@ class Event {
     private $start_time;
     private $end_time;
     private $location;
+    private $details;
     private $picture;
     private $startISO;
     private $endISO;
 
 
     
-    public function __construct($id, $title, $category, $date, $start_time, $end_time, $location, $picture, $startISO, $endISO){
+    public function __construct($id, $title, $category, $date, $start_time, $end_time, $location, $details, $picture, $startISO, $endISO){
         $this->id = $id;
         $this->title = $title;
         $this->category = $category;
@@ -22,6 +23,7 @@ class Event {
         $this->start_time = $start_time;
         $this->end_time = $end_time;
         $this->location = $location;
+        $this->details = $details;
         $this->picture = $picture;
         $this->startISO = $startISO;
         $this->endISO = $endISO;
@@ -55,6 +57,10 @@ class Event {
         return $this->location;
     }
 
+    public function getDetails(){
+        return $this->details;
+    }
+
     public function getPicture(){
         return $this->picture;
     }
@@ -66,7 +72,7 @@ class Event {
     public function getEndISO(){
         return $this->endISO;
     }
-    
+ 
 }
 
 ?>

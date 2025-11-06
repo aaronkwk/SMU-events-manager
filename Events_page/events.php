@@ -41,7 +41,6 @@ if (!isset($_SESSION['username'])){
 </div>
 
   <br>
-  <a href="statistics.php">TEST</a>
   <nav class="navbar navbar-expand-lg navbar-light" id="navbarid">
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -109,9 +108,10 @@ if (!isset($_SESSION['username'])){
       'start_time' => $event->getStartTime(),
       'end_time' => $event->getEndTime(),
       'location' => $event->getLocation(),
+      'details' => $event->getDetails(),
       'picture' => $event->getPicture(),
       'startISO' => $event->getStartISO(),
-      'endISO' => $event->getEndISO(),
+      'endISO' => $event->getEndISO()
     ];
   }, $all_events_obj);
 
@@ -130,9 +130,10 @@ if (!isset($_SESSION['username'])){
         'start_time' => $events->getStartTime(),
         'end_time' => $events->getEndTime(),
         'location' => $events->getLocation(),
+        'details' => $events->getDetails(),
         'picture' => $events->getPicture(),
         'startISO' => $events->getStartISO(),
-        'endISO' => $events->getEndISO(),
+        'endISO' => $events->getEndISO()
     ];
   }, $user_events_obj);
 
@@ -166,6 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     </div>
     `;
+
+    // render the carousel all events
+    applyFilter();
   });
 
 
@@ -261,6 +265,7 @@ function cardTemplate(e, isSaved, hasClashAgainstOthers){
          data-start="${e.startISO}"
          data-end="${e.endISO}"
          data-img="${e.picture}"
+         data-details="${e.details}"
          data-categories='${JSON.stringify(e.category)}'>
          ${isSaved ? 'Saved' : 'Save to My Events'}
       </button>
@@ -355,6 +360,7 @@ document.addEventListener('click', (e) => {
       endISO: sbtn.dataset.end,
       location: sbtn.dataset.location,
       img: sbtn.dataset.img || '',
+      details: sbtn.dataset.details,
       categories: JSON.parse(sbtn.dataset.categories || '')
     };
     const mine = loadMyEvents;
@@ -416,7 +422,7 @@ function getAllEventRankings() {
 
 
 /* Initial render */
-applyFilter();
+// applyFilter();
 
 }); // DOMContentLoaded
 </script>

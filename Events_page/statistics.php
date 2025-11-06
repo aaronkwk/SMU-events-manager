@@ -92,11 +92,9 @@ $user_events_json = json_encode($user_events_arr);    // USER EVENTS
     <!-- sidebar -->
     <aside class="col-auto sidebar d-flex flex-column p-4" id="navbarid">
       <ul class="navbar-nav ps-0">
-        <div class="navbar-nav" id="navitems">
-        <a class="nav-item nav-link ula nvit" href="#">Manage Events </a>
-        <a class="nav-item nav-link ula nvit" href="statistics.php">Statistics</a>
-        <a class="nav-item nav-link ula nvit" href="#">Chat</a>
-        <a class="nav-item nav-link ula nvit" id="logout" href="logout.php">Logout</a>
+        <li><a class="nav-item nav-link ula nvit" href="manage_events_admin.php">Manage Events</a></li>
+        <li><a class="nav-item nav-link ula nvit" href="statistics.php">Statistics</a></li>
+        <li><a class="nav-item nav-link ula nvit" href="chat.php">Chat</a></li>
       </ul>
     </aside>
 
@@ -106,9 +104,7 @@ $user_events_json = json_encode($user_events_arr);    // USER EVENTS
         <h1>Omni</h1>
       </div>
       <div class="d-flex align-items-end gap-3">
-        <button class="btn btn-outline-primary">
-          <a class="nav-item nav-link ula nvit" id="logout" href="logout.php">Logout</a>
-        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" onclick="window.location.href='logout.php'">Logout</button>
       </div>
     </header>
 

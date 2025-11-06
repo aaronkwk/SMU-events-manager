@@ -23,6 +23,7 @@ class EventCollectionDAO
                 $row["start_time"],
                 $row["end_time"],
                 $row["location"],
+                $row["details"],
                 $row["picture"],
                 $row["startISO"],
                 $row["endISO"]
@@ -34,39 +35,40 @@ class EventCollectionDAO
         return $events;
     }
 
-    public function getFilteredEvents($filter) {
-        $sql = "select * from events where category = :filter";
+    // MAY NOT NEED
+    // public function getFilteredEvents($filter) {
+    //     $sql = "select * from events where category = :filter";
 
-        $connMgr = new ConnectionManager();
-        $conn = $connMgr->getConnection();
+    //     $connMgr = new ConnectionManager();
+    //     $conn = $connMgr->getConnection();
 
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':filter', $filter, PDO::PARAM_STR);
+    //     $stmt = $conn->prepare($sql);
+    //     $stmt->bindParam(':filter', $filter, PDO::PARAM_STR);
 
-        $stmt->execute();
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+    //     $stmt->execute();
+    //     $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
-        $events = [];
-        while ($row = $stmt->fetch()) {
-            $events[] = new Event(
-                $row["id"],
-                $row["title"],
-                $row["category"],
-                $row["date"],
-                $row["start_time"],
-                $row["end_time"],
-                $row["location"],
-                $row["picture"],
-                $row["startISO"],
-                $row["endISO"]
-            );
-        }
+    //     $events = [];
+    //     while ($row = $stmt->fetch()) {
+    //         $events[] = new Event(
+    //             $row["id"],
+    //             $row["title"],
+    //             $row["category"],
+    //             $row["date"],
+    //             $row["start_time"],
+    //             $row["end_time"],
+    //             $row["location"],
+    //             $row["picture"],
+    //             $row["startISO"],
+    //             $row["endISO"]
+    //         );
+    //     }
 
-        $stmt = null;
-        $conn = null;
-        return $events;
+    //     $stmt = null;
+    //     $conn = null;
+    //     return $events;
 
-    }
+    // }
 
     public function getUsers()
     {
@@ -99,7 +101,7 @@ class EventCollectionDAO
         $connMgr = new ConnectionManager();
 		$conn = $connMgr->getConnection();
 
-		$sql = 'INSERT INTO event_person VALUES
+		$sql = 'INSERT INTO event_person (person_id, event_id) VALUES
 				(:personID, :eventID)';
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(':personID', $personID, PDO::PARAM_INT);
@@ -166,7 +168,7 @@ class EventCollectionDAO
         $connMgr = new ConnectionManager();
         $conn = $connMgr->getConnection();
 
-        $sql = 'SELECT id, title, category, date, start_time, end_time, location, picture, startISO, endISO FROM events e INNER JOIN event_person ep
+        $sql = 'SELECT id, title, category, date, start_time, end_time, location, details, picture, startISO, endISO FROM events e INNER JOIN event_person ep
                 ON e.id = ep.event_id WHERE person_id = :userID';
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':userID', $userID, PDO::PARAM_INT);
@@ -184,6 +186,7 @@ class EventCollectionDAO
                 $row["start_time"],
                 $row["end_time"],
                 $row["location"],
+                $row["details"],
                 $row["picture"],
                 $row["startISO"],
                 $row["endISO"]
