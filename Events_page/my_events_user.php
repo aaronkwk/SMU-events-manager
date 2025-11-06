@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 if (!isset($_SESSION['username'])){
@@ -16,6 +17,7 @@ spl_autoload_register(
     require_once "model/$class.php";
   }
 );
+
 ?>
 
 <!DOCTYPE html>
@@ -26,23 +28,59 @@ spl_autoload_register(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="events_style.css?v=3">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="events_style.css">
 
   <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
 </head>
 <body>
-<div class="container py-4 px-4 my-events">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h2 class="h4 mb-0">My Events</h2>
-    <div class="d-flex gap-2">
-      <a href="events.php" class="btn btn-outline-secondary btn-sm"><i class="bi bi-chevron-left me-1"></i>Back to Events</a>
-      <button id="clearAll" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash3 me-1"></i>Clear All</button>
-    </div>
+<div class="container py-4">
+  <!-- Logo/Brand Header -->
+  <div class="wbname d-flex align-items-center justify-content-center">
+    <img src="pictures/omni_logo.png" alt="Omni Logo" class="omni-logo me-2">
+    <h1 class="omni-title mb-0">OMNI</h1>
   </div>
 
-  <div id="myEventsContainer" class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-</div>
-  <p id="emptyState" class="text-muted mt-4" style="display:none;">No saved events yet. Go to <a href="events.html">Events</a> to add some.</p>
+  <br>
+  
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light" id="navbarid">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav" id="navitems">
+        <a class="nav-item nav-link ula nvit" href="events.php">Events</a>
+        <a class="nav-item nav-link ula nvit" href="#">Account</a>
+        <a class="nav-item nav-link ula nvit" href="#">My Events</a>
+        <a class="nav-item nav-link ula nvit" href="dashboard.php">Dashboard</a>
+      </div>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-item nav-link ula nvit me-3" id="logout" href="logout.php">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold" style="color:#041373;">My Saved Events</h2>
+    <p class="text-muted mb-0"><strong>Manage your saved events and add them to your calendar.</strong></p>
+  </div>
+
+  <!-- Action Buttons
+  <div class="d-flex justify-content-end gap-2 mb-4">
+    <button id="clearAll" class="btn btn-outline-danger btn-sm">
+      <i class="bi bi-trash3 me-1"></i>Clear All
+    </button>
+  </div> -->
+
+  <!-- Events Grid -->
+  <div id="myEventsContainer" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-3">
+  </div>
+  
+  <p id="emptyState" class="text-muted mt-4 text-center" style="display:none;">
+    No saved events yet. Go to <a href="events.php">Events</a> to add some.
+  </p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -68,6 +106,28 @@ spl_autoload_register(
     ];
   }, $user_events_obj);
 
+  // Get a PDO
+$cm = new ConnectionManager();
+$db = $cm->getConnection();
+
+// Prepare once for speed
+$seenStmt = $db->prepare("
+  SELECT last_seen
+  FROM chat_reads
+  WHERE user_id = ? AND event_id = ?
+  LIMIT 1
+");
+
+foreach ($user_events_arr as &$e) {
+  $seenStmt->execute([$currentUser, $e['id']]);
+  $lastSeen = $seenStmt->fetchColumn();
+
+  // Simple rule: unread if never opened OR opened before the event's start
+  $startTs = strtotime($e['startISO'] ?? $e['date']);
+  $e['hasUnread'] = (!$lastSeen) || (strtotime($lastSeen) < $startTs);
+}
+unset($e);
+
   $user_events_json = json_encode($user_events_arr);
 ?>
 
@@ -77,8 +137,17 @@ const MY_EVENTS_KEY = 'smu_my_events_v1';
 let loadMyEvents = <?= $user_events_json ?>;
 const saveMyEvents = (list) => localStorage.setItem(MY_EVENTS_KEY, JSON.stringify(list));
 
-// same category→accent map used on events page
-const ACCENT = { tech:'accent-sky', arts:'accent-pink', sports:'accent-mint', career:'accent-lav', community:'accent-mint' };
+// Get category classes for colored header strips
+function getCategoryClass(categories) {
+  if (!categories) return '';
+  const catArray = Array.isArray(categories) ? categories : [categories];
+  // Return first category class found
+  if (catArray.includes('tech')) return 'tech';
+  if (catArray.includes('arts')) return 'arts';
+  if (catArray.includes('sports')) return 'sports';
+  if (catArray.includes('career')) return 'career';
+  return '';
+}
 
 // Google link builder
 function toUTCBasic(iso){ const d=new Date(iso),pad=n=>String(n).padStart(2,'0'); return `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`; }
@@ -92,36 +161,57 @@ function googleCalUrl({title, startISO, endISO, location, details=""}){
   return u.toString();
 }
 
-function formatRange(startISO, endISO){
-  const optsDate = { weekday:'short', day:'2-digit', month:'short', year:'numeric' };
-  const optsTime = { hour:'2-digit', minute:'2-digit' };
-  const s = new Date(startISO), e = new Date(endISO);
-  const dateText = s.toLocaleDateString(undefined, optsDate);
-  const timeText = `${s.toLocaleTimeString(undefined, optsTime)} – ${e.toLocaleTimeString(undefined, optsTime)}`;
-  return {dateText, timeText};
+function formatDate(startISO) {
+  const optsDate = {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  };
+  let s = new Date(startISO);
+  let dateText = s.toLocaleDateString(undefined, optsDate);
+  return dateText;
 }
 
 function card(e){
   console.log(e);
-  const {dateText, timeText} = formatRange(e.startISO, e.endISO);
+  const dateText = formatDate(e.startISO);
   const picture = e.picture || 'placeholder.jpg';
+  const categoryClass = getCategoryClass(e.category);
+  
   return `
   <div class="col">
-    <div class="event-card">
+    <div class="event-card ${categoryClass}">
       <img class="event-thumb" src="${picture}" alt="${e.title}">
       <div class="event-body">
         <h5 class="event-title">${e.title}</h5>
         <ul class="meta-list">
           <li><i class="bi bi-calendar2-event"></i>${dateText}</li>
-          <li><i class="bi bi-clock"></i>${timeText}</li>
+          <li><i class="bi bi-clock"></i>${e.start_time} - ${e.end_time}</li>
           <li><i class="bi bi-geo-alt"></i>${e.location || ''}</li>
         </ul>
-        <div class="event-actions d-flex gap-2 flex-wrap">
-          <a class="btn btn-primary btn-sm" href="${googleCalUrl(e)}" target="_blank" rel="noopener">
+        
+        <!-- Actions Row -->
+        <div class="event-actions">
+          <a class="btn btn-primary flex-grow-1" href="${googleCalUrl(e)}" target="_blank" rel="noopener">
             <i class="bi bi-calendar-plus me-1"></i>Add to Google
           </a>
-          <button class="btn btn-outline-danger btn-sm" data-eid="${e.id}" data-remove="${e.title}|${e.startISO}">
-            <i class="bi bi-x-circle me-1"></i>Remove
+          <a class="btn btn-outline-primary position-relative"
+            href="chat.php?event_id=${e.id}"
+            target="_blank" 
+            rel="noopener"
+            title="Chat">
+            <i class="bi bi-chat-dots"></i>
+            ${e.hasUnread
+              ? '<span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>'
+              : ''
+            }
+          </a>
+          <button class="btn btn-outline-danger" 
+                  data-eid="${e.id}" 
+                  data-remove="${e.title}|${e.startISO}"
+                  title="Remove">
+            <i class="bi bi-trash3"></i>
           </button>
         </div>
       </div>
@@ -129,10 +219,7 @@ function card(e){
   </div>`;
 }
 
-
-
 function render(list){
-  // const list = loadMyEvents;
   const cont = document.getElementById('myEventsContainer');
   const empty = document.getElementById('emptyState');
   if (!list.length) {
@@ -144,28 +231,24 @@ function render(list){
   cont.innerHTML = list.map(card).join('');
 }
 
-document.getElementById('clearAll').addEventListener('click', () => {
-  if (confirm('Clear all saved events?')) {
-    loadMyEvents = [];
-    // axios for removing everything in sql database
-    removeAllEvents();
-    render(loadMyEvents);
-  }
-});
+// document.getElementById('clearAll').addEventListener('click', () => {
+//   if (confirm('Clear all saved events?')) {
+//     loadMyEvents = [];
+//     removeAllEvents();
+//     render(loadMyEvents);
+//   }
+// });
 
 document.addEventListener('click', (e) => {
-  let btn = e.target.closest('[data-remove]');
+  const btn = e.target.closest('[data-remove]');
   if (!btn) return;
-  let [title, startISO] = btn.dataset.remove.split('|');
-  loadMyEvents = loadMyEvents.filter(ev => !(ev.title === title && ev.startISO === startISO));
+  const [title, startISO] = btn.dataset.remove.split('|');
+  const updatedList = loadMyEvents.filter(ev => !(ev.title === title && ev.startISO === startISO));
   console.log(btn.dataset.eid);
   removeEvents(btn.dataset.eid);
-  removePoints();
-
-  console.log(loadMyEvents);
+  loadMyEvents = updatedList;
   render(loadMyEvents);
 });
-
 
 function removeEvents(eventID) {
   let userID = <?= $currentUser ?>;
@@ -180,7 +263,6 @@ function removeEvents(eventID) {
   })
     .then(response => {
         console.log(response.data);
-        
     })
     .catch(error => {
         console.log(error.message);
@@ -199,26 +281,6 @@ function removeAllEvents() {
   })
     .then(response => {
         console.log(response.data);
-        
-    })
-    .catch(error => {
-        console.log(error.message);
-    });
-}
-
-function removePoints() {
-  let userID = <?= $currentUser ?>;
-  let url = "axios/sql_updating.php";
-
-  axios.get(url, { params:
-    {
-    "personID": userID,
-    "option": "removePts"
-    }
-  })
-    .then(response => {
-        console.log(response.data);
-        
     })
     .catch(error => {
         console.log(error.message);

@@ -239,9 +239,9 @@ body::before {
   flex:1; position:relative; z-index:2;
 }
 .event-title {
-  font-weight: 700; font-size: 20px; margin: 0 0 12px; color:#041373;
+  font-weight: 700; font-size: 20px; margin: 0 0 8px; color:#041373;
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
-  overflow:hidden; line-height:1.5; min-height:3em; transition: color .3s ease;
+  overflow:hidden; line-height:1.5; min-height:1em; transition: color .3s ease;
 }
 .event-card:hover .event-title { color: rgb(191,156,96); }
 
@@ -654,3 +654,4 @@ body::before {
   margin: 0;
   white-space: nowrap;
 }
+
