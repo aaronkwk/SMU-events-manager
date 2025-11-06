@@ -206,7 +206,7 @@ class EventCollectionDAO
     
         $sql = 'SELECT COUNT(person_id) AS save_count 
                 FROM event_person 
-                WHERE event_id = :eventID';
+                WHERE event_id = :eventID AND role = "participant"';
     
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':eventID', $eventID, PDO::PARAM_INT);
