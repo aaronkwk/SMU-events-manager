@@ -51,7 +51,6 @@ spl_autoload_register(
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav" id="navitems">
         <a class="nav-item nav-link ula nvit" href="events.php">Events</a>
-        <a class="nav-item nav-link ula nvit" href="#">Account</a>
         <a class="nav-item nav-link ula nvit" href="#">My Events</a>
         <a class="nav-item nav-link ula nvit" href="dashboard.php">Dashboard</a>
       </div>

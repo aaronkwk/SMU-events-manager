@@ -124,7 +124,6 @@ $all_users_json = json_encode($all_users_arr);
                 <div class="navbar-nav" id="navitems">
                     <a class="nav-item nav-link ula nvit" href="events.php">Events </a>
                     <!-- <a class="nav-item nav-link ula nvit" href="#">Daily Challenge</a> -->
-                    <a class="nav-item nav-link ula nvit" href="#">Account</a>
                     <a class="nav-item nav-link ula nvit" href="my_events_user.php">My Events</a>
                     <a class="nav-item nav-link ula nvit" href="#">Dashboard</a>
                 </div>
