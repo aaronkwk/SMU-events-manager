@@ -377,7 +377,6 @@ $user_events_json = json_encode($user_events_arr);
         <ul class="navbar-nav ps-0">
           <li><a class="nav-link ula" href="manage_events_admin.php">Manage Events</a></li>
           <li><a class="nav-link ula" href="statistics.php">Statistics</a></li>
-          <li><a class="nav-link ula" href="chat.php">Chat</a></li>
         </ul>
       </aside>
 
