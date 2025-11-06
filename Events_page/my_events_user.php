@@ -195,17 +195,6 @@ function card(e){
           <a class="btn btn-primary flex-grow-1" href="${googleCalUrl(e)}" target="_blank" rel="noopener">
             <i class="bi bi-calendar-plus me-1"></i>Add to Google
           </a>
-          <a class="btn btn-outline-primary position-relative"
-            href="chat.php?event_id=${e.id}"
-            target="_blank" 
-            rel="noopener"
-            title="Chat">
-            <i class="bi bi-chat-dots"></i>
-            ${e.hasUnread
-              ? '<span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>'
-              : ''
-            }
-          </a>
           <button class="btn btn-outline-danger" 
                   data-eid="${e.id}" 
                   data-remove="${e.title}|${e.startISO}"
