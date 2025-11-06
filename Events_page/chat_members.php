@@ -1,12 +1,12 @@
 <?php
-declare(strict_types=1);
+// declare(strict_types=1);
 session_start();
-spl_autoload_register(
-  function ($class) {
-    require_once "model/$class.php";
-  }
-);
-require_once 'config.php';
+// spl_autoload_register(
+//   function ($class) {
+//     require_once "model/$class.php";
+//   }
+// );
+require_once 'db_connect.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['username'])) { echo json_encode(['members'=>[], 'error'=>'Login required']); exit; }
