@@ -1,4 +1,4 @@
 <?php
-header("Location: Events_page_v2/Login.php");
+header("Location: Events_page/landing.php");
 exit();
 ?>
