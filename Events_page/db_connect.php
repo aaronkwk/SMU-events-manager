@@ -20,7 +20,7 @@ class ConnectionManager
             // 
             // 1. Define the path to the certificate *on the server*.
             //    __DIR__ gets the directory of this PHP file.
-            $ssl_ca = __DIR__ . 'model/ssl/combined-ca-certificates.pem';
+            $ssl_ca = __DIR__ . '/ssl/combined-ca-certificates.pem';
 
             // 2. Add the SSL_CA option to force a secure connection.
             $options = [
@@ -32,7 +32,7 @@ class ConnectionManager
         } 
         else {
             // Local: use CA certificate
-            $ssl_ca = 'model/ssl/combined-ca-certificates.pem';
+            $ssl_ca = '/ssl/combined-ca-certificates.pem';
             $options = [
                 PDO::MYSQL_ATTR_SSL_CA => $ssl_ca,
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
