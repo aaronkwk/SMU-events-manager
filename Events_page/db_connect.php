@@ -7,7 +7,7 @@ class ConnectionManager
         $dbname     = 'omni-db';
         $username   = 'zevoevjtfj';
         $password   = 'passwordOmni1';
-        $port       = 3306;
+        $port       = '3306';
 
         // Detect Azure reliably
         $isAzure = getenv('WEBSITE_SITE_NAME') !== false;
