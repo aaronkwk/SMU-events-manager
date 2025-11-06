@@ -1,203 +1,136 @@
 <?php
-// chat_send.php - Enhanced debugging version
+// chat_send.php — stable Sendbird message sender with auto-fix for "User not found"
+declare(strict_types=1);
 session_start();
 require_once 'db_connect.php';
 require_once 'config.php';
 header('Content-Type: application/json');
 
-// Enhanced logging
-function debug_log($msg, $data = null) {
-  $log = '[' . date('Y-m-d H:i:s') . '] ' . $msg;
-  if ($data !== null) {
-    $log .= ' | Data: ' . print_r($data, true);
-  }
-  error_log($log . "\n", 3, __DIR__ . '/chat_send_debug.log');
-}
-
-debug_log('=== CHAT SEND REQUEST START ===');
-debug_log('SESSION', $_SESSION);
-debug_log('POST', $_POST);
-debug_log('FILES', $_FILES);
-
+// ===== AUTH CHECK =====
 if (!isset($_SESSION['username'])) {
-  debug_log('ERROR: No session username');
   http_response_code(401);
-  echo json_encode(['error'=>'Login required']);
+  echo json_encode(['error' => true, 'message' => 'Login required']);
   exit;
 }
 
+// ===== INPUTS =====
 $eventId = (int)($_POST['event_id'] ?? 0);
 $message = trim((string)($_POST['message'] ?? ''));
 
-debug_log('Parsed eventId', $eventId);
-debug_log('Parsed message', $message);
-
 if ($eventId <= 0) {
-  debug_log('ERROR: Invalid event_id');
   http_response_code(400);
-  echo json_encode(['error'=>'Missing event_id']);
+  echo json_encode(['error' => true, 'message' => 'Missing event_id']);
+  exit;
+}
+if ($message === '') {
+  http_response_code(400);
+  echo json_encode(['error' => true, 'message' => 'Empty message']);
   exit;
 }
 
-try {
-  $cm = new ConnectionManager();
-  $db = $cm->connect();
+// ===== DB CONNECTION =====
+$cm = new ConnectionManager();
+$db = $cm->connect();
 
-  $u = $db->prepare("SELECT id, username FROM users WHERE username=?");
-  $u->execute([$_SESSION['username']]);
-  $me = $u->fetch(PDO::FETCH_ASSOC);
-  
-  if (!$me) {
-    debug_log('ERROR: User not found in database');
-    throw new RuntimeException('User not found');
-  }
-
-  $userId = (int)$me['id'];
-  $sbUserId = "user_" . $userId;
-  debug_log('User resolved', ['userId' => $userId, 'sbUserId' => $sbUserId]);
-
-  // Get channel URL
-  $q = $db->prepare("SELECT channel_url FROM event_chat_channel WHERE event_id=?");
-  $q->execute([$eventId]);
-  $row = $q->fetch(PDO::FETCH_ASSOC);
-  
-  if (!$row || empty($row['channel_url'])) {
-    debug_log('ERROR: No channel found for event_id', $eventId);
-    throw new RuntimeException('Channel not ready. Please refresh and try again.');
-  }
-
-  $channelUrl = $row['channel_url'];
-  $chanEnc = rawurlencode($channelUrl);
-  debug_log('Channel found', ['channelUrl' => $channelUrl, 'encoded' => $chanEnc]);
-
-  $SB_HOST = rtrim(SENDBIRD_API_HOST, '/');
-  $SB_TOKEN = SENDBIRD_API_TOKEN;
-
-  // Check for file upload
-  $hasFile = isset($_FILES['file']) 
-    && is_array($_FILES['file'])
-    && ($_FILES['file']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK
-    && is_uploaded_file($_FILES['file']['tmp_name']);
-
-  debug_log('Has file?', $hasFile);
-
-  if ($hasFile) {
-    debug_log('Processing FILE message');
-    
-    $origName = $_FILES['file']['name'] ?: 'file';
-    $mime = $_FILES['file']['type'] ?: 'application/octet-stream';
-    $tmpPath = $_FILES['file']['tmp_name'];
-    
-    debug_log('File details', [
-      'name' => $origName,
-      'mime' => $mime,
-      'size' => filesize($tmpPath),
-      'tmp' => $tmpPath
-    ]);
-
-    $cfile = new CURLFile($tmpPath, $mime, $origName);
-
-    $fields = [
-      'message_type' => 'FILE',
-      'user_id' => $sbUserId,
-      'file' => $cfile,
-      'file_name' => $origName,
-    ];
-    
-    if ($message !== '') {
-      $fields['message'] = $message;
-    }
-    
-    if (strpos($mime, 'image/') === 0) {
-      $fields['thumbnail_sizes'] = json_encode([[320,320],[640,640]]);
-    }
-
-    $url = $SB_HOST . "/v3/group_channels/$chanEnc/messages";
-    debug_log('Sending to URL', $url);
-
-    $ch = curl_init();
-    curl_setopt_array($ch, [
-      CURLOPT_URL => $url,
-      CURLOPT_POST => true,
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_HTTPHEADER => ['Api-Token: ' . $SB_TOKEN],
-      CURLOPT_POSTFIELDS => $fields,
-      CURLOPT_TIMEOUT => 90,
-      CURLOPT_VERBOSE => true,
-    ]);
-    
-    $resp = curl_exec($ch);
-    $cerr = curl_error($ch);
-    $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    debug_log('FILE Response', [
-      'http' => $http,
-      'error' => $cerr,
-      'response' => substr($resp, 0, 500)
-    ]);
-
-    if ($http >= 400 || $resp === false) {
-      throw new RuntimeException("File upload failed (HTTP $http): " . substr($resp, 0, 200));
-    }
-    
-    echo $resp;
-    exit;
-  }
-
-  // TEXT message
-  if ($message === '') {
-    debug_log('ERROR: Empty message with no file');
-    throw new RuntimeException('Message cannot be empty');
-  }
-
-  debug_log('Processing TEXT message');
-  
-  $payload = [
-    'message_type' => 'MESG',
-    'user_id' => $sbUserId,
-    'message' => $message
-  ];
-  
-  $url = $SB_HOST . "/v3/group_channels/$chanEnc/messages";
-  debug_log('Sending to URL', $url);
-  debug_log('Payload', $payload);
-
-  $ch = curl_init();
-  curl_setopt_array($ch, [
-    CURLOPT_URL => $url,
-    CURLOPT_POST => true,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_HTTPHEADER => [
-      'Content-Type: application/json',
-      'Api-Token: ' . $SB_TOKEN
-    ],
-    CURLOPT_POSTFIELDS => json_encode($payload),
-    CURLOPT_TIMEOUT => 30,
-  ]);
-  
-  $resp = curl_exec($ch);
-  $cerr = curl_error($ch);
-  $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
-
-  debug_log('TEXT Response', [
-    'http' => $http,
-    'error' => $cerr,
-    'response' => substr($resp, 0, 500)
-  ]);
-
-  if ($http >= 400 || $resp === false) {
-    throw new RuntimeException("Send failed (HTTP $http): " . substr($resp, 0, 200));
-  }
-
-  echo $resp ?: json_encode(['ok' => true]);
-
-} catch (Throwable $e) {
-  debug_log('EXCEPTION', $e->getMessage());
-  http_response_code(200);
-  echo json_encode(['error' => $e->getMessage()]);
+// Resolve current user
+$stmt = $db->prepare("SELECT id, username, role FROM users WHERE username = ?");
+$stmt->execute([$_SESSION['username']]);
+$me = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$me) {
+  http_response_code(403);
+  echo json_encode(['error' => true, 'message' => 'User not found in DB']);
+  exit;
 }
 
-debug_log('=== CHAT SEND REQUEST END ===');
+$userId = (int)$me['id'];
+$username = (string)$me['username'];
+$role = strtolower((string)$me['role']);
+$isAdmin = $role === 'admin';
+
+// Get channel URL for this event
+$q = $db->prepare("SELECT channel_url FROM event_chat_channel WHERE event_id = ?");
+$q->execute([$eventId]);
+$row = $q->fetch(PDO::FETCH_ASSOC);
+if (!$row || empty($row['channel_url'])) {
+  http_response_code(400);
+  echo json_encode(['error' => true, 'message' => 'Channel not found for this event']);
+  exit;
+}
+$channelUrl = $row['channel_url'];
+
+// ===== SENDBIRD CONFIG =====
+$appId = SENDBIRD_APP_ID;
+$apiToken = SENDBIRD_API_TOKEN;
+
+// Canonical Sendbird user ID (consistent everywhere)
+$sbUserId = 'u_' . $userId; // <-- keep this the same everywhere
+
+// ===== CURL WRAPPER =====
+function sb_request(string $method, string $path, ?array $payload, string $apiToken): array {
+  global $appId;
+  $url = "https://api-$appId.sendbird.com$path";
+  $ch = curl_init($url);
+  $headers = [
+    'Content-Type: application/json; charset=utf-8',
+    'Api-Token: ' . $apiToken,
+  ];
+  curl_setopt_array($ch, [
+    CURLOPT_CUSTOMREQUEST => $method,
+    CURLOPT_HTTPHEADER => $headers,
+    CURLOPT_RETURNTRANSFER => true,
+  ]);
+  if ($payload !== null) {
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+  }
+  $response = curl_exec($ch);
+  $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  curl_close($ch);
+  return [$status, $response ? json_decode($response, true) : null];
+}
+
+// ===== 1) UPSERT USER =====
+[$codeU, $resU] = sb_request('PUT', '/v3/users/' . rawurlencode($sbUserId), [
+  'user_id'  => $sbUserId,
+  'nickname' => $username,
+], $apiToken);
+
+if ($codeU >= 400) {
+  http_response_code(500);
+  echo json_encode(['error' => true, 'message' => 'Failed to upsert user', 'detail' => $resU]);
+  exit;
+}
+
+// ===== 2) ENSURE MEMBERSHIP =====
+[$codeM, $resM] = sb_request('GET', '/v3/group_channels/' . rawurlencode($channelUrl) . '/members/' . rawurlencode($sbUserId), null, $apiToken);
+
+if ($codeM === 404) {
+  // User not in channel → invite and accept
+  sb_request('POST', '/v3/group_channels/' . rawurlencode($channelUrl) . '/invite', [
+    'user_ids' => [$sbUserId],
+  ], $apiToken);
+
+  sb_request('PUT', '/v3/group_channels/' . rawurlencode($channelUrl) . '/accept', [
+    'user_id' => $sbUserId,
+  ], $apiToken);
+}
+
+// ===== 3) SEND MESSAGE =====
+[$codeS, $resS] = sb_request('POST', '/v3/group_channels/' . rawurlencode($channelUrl) . '/messages', [
+  'message_type' => 'MESG',
+  'user_id'      => $sbUserId,
+  'message'      => $message,
+], $apiToken);
+
+if ($codeS >= 400) {
+  http_response_code(400);
+  echo json_encode(['error' => true, 'message' => 'Send failed', 'detail' => $resS]);
+  exit;
+}
+
+// ===== SUCCESS =====
+echo json_encode([
+  'ok' => true,
+  'message_id' => $resS['message_id'] ?? null,
+  'timestamp' => $resS['created_at'] ?? null,
+]);
 ?>
