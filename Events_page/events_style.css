@@ -190,11 +190,11 @@ body::before {
 .chip.accent-mint  { border-color:rgb(158,192,67);  color:rgb(158,192,67); }
 .chip.accent-lav   { border-color:rgb(220,111,48);  color:rgb(220,111,48); }
 
-.chip.accent-grey:hover, .chip.accent-grey.active   { background:#616161; color:#fff; border-color:#616161; box-shadow:0 12px 35px rgba(97,97,97,.4); }
-.chip.accent-pink:hover, .chip.accent-pink.active   { background:rgb(195,110,179); color:#fff; border-color:rgb(195,110,179); box-shadow:0 12px 35px rgba(195,110,179,.4); }
-.chip.accent-sky:hover,  .chip.accent-sky.active    { background:rgb(115,185,192); color:#fff; border-color:rgb(115,185,192); box-shadow:0 12px 35px rgba(115,185,192,.4); }
-.chip.accent-mint:hover, .chip.accent-mint.active   { background:rgb(158,192,67); color:#fff; border-color:rgb(158,192,67); box-shadow:0 12px 35px rgba(158,192,67,.4); }
-.chip.accent-lav:hover,  .chip.accent-lav.active    { background:rgb(220,111,48); color:#fff; border-color:rgb(220,111,48); box-shadow:0 12px 35px rgba(220,111,48,.4); }
+.chip.accent-grey:hover, .chip.accent-grey.active   { background:#616161; color:#000000; border-color:#616161; box-shadow:0 12px 35px rgba(97,97,97,.4); }
+.chip.accent-pink:hover, .chip.accent-pink.active   { background:rgb(195,110,179); color:#000000; border-color:rgb(195,110,179); box-shadow:0 12px 35px rgba(195,110,179,.4); }
+.chip.accent-sky:hover,  .chip.accent-sky.active    { background:rgb(115,185,192); color:#000000; border-color:rgb(115,185,192); box-shadow:0 12px 35px rgba(115,185,192,.4); }
+.chip.accent-mint:hover, .chip.accent-mint.active   { background:rgb(158,192,67); color:#000000; border-color:rgb(158,192,67); box-shadow:0 12px 35px rgba(158,192,67,.4); }
+.chip.accent-lav:hover,  .chip.accent-lav.active    { background:rgb(220,111,48); color:#000000; border-color:rgb(220,111,48); box-shadow:0 12px 35px rgba(220,111,48,.4); }
 
 /* ========================================================================
    EVENT CARDS (keep category header strip)
