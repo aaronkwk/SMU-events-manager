@@ -2,7 +2,11 @@
 // chats.php — unified list of chats for users and admins (uses event_person.role = 'creator')
 declare(strict_types=1);
 session_start();
-require_once 'db_connect.php';
+spl_autoload_register(
+  function ($class) {
+    require_once "model/$class.php";
+  }
+);
 require_once 'config.php';
 
 if (!isset($_SESSION['username'])) {
