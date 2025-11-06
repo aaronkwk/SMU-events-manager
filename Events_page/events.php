@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
         <h3 class="mb-2" style="color:#041373;"><strong>${trendingEvent.title}</strong></h3>
         <p class="mb-1" style="color:goldenrod;"><i class="bi bi-calendar-event"></i> <strong>${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</strong></p>
-        <p class="mb-3">Join the biggest hackathon of the year and compete for prizes!</p>
+        <p class="mb-3">${trendingEvent.details}</p>
         <a href="#" class="btn btn-primary btn-sm">View Details</a>
       </div>
     </div>

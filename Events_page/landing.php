@@ -99,21 +99,32 @@ $events_json = json_encode($events_arr);
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const events = <?= $events_json ?>;
+  let events = <?= $events_json ?>;
 
-  // Display trending event (just the first)
-  if(events.length>0){
-    const trendingEvent = events[0];
-    document.getElementById("trending").innerHTML=`
-      <div class="event-card accent-sky d-flex flex-column flex-md-row align-items-center p-3 mb-3">
-        <img src="${trendingEvent.picture}" alt="Featured Event" class="event-thumb me-md-3 mb-3 mb-md-0" style="max-width:320px; border-radius:10px;">
-        <div>
-          <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
-          <h3 class="mb-2" style="color:#041373;"><strong>${trendingEvent.title}</strong></h3>
-          <p class="mb-1"><i class="bi bi-calendar-event"></i> <strong>${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</strong></p>
-        </div>
-      </div>`;
-  }
+  getAllEventRankings().then(() => {      
+    events.sort((a, b) => b.signups - a.signups);
+    console.log(events);
+    let trendingEvent = events[0];
+    console.log(trendingEvent);
+
+    trendingDiv = document.getElementById("trending");
+    trendingDiv.innerHTML = `
+    <div class="event-card accent-sky d-flex flex-column flex-md-row align-items-center p-3 mb-3">
+      <img src="${trendingEvent.picture}" alt="Featured Event" class="event-thumb me-md-3 mb-3 mb-md-0"
+          style="max-width:320px; border-radius:10px;">
+      <div>
+        <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
+        <h3 class="mb-2" style="color:#041373;"><strong>${trendingEvent.title}</strong></h3>
+        <p class="mb-1"><i class="bi bi-calendar-event"></i> <strong>${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</strong></p>
+        <p class="mb-3">${trendingEvent.details}</p>
+      </div>
+    </div>
+    `;
+
+    // render the carousel all events
+    applyFilter();
+  });
+
 
   // Simple carousel rendering (no user events, no clashes)
   function cardTemplate(e){
@@ -160,6 +171,32 @@ document.addEventListener('DOMContentLoaded', () => {
     return dateText;
   }
   renderCarousel(events);
+
+  function getAllEventRankings() {
+    let userID = <?= $currentUser ?>;
+    let url = "axios/sql_updating.php";
+
+    const requestPromises = events.map((event) => {
+      return axios.get(url, { params: 
+        {
+          "personID": userID,
+          "eventID": event.id,
+          "option": "getCount"
+        }
+      })
+      .then(response => {
+        console.log(response.data); 
+        let count = response.data;
+        event.signups = count; 
+      })
+      .catch(error => {
+        console.log(`Error fetching count for event ${event.id}: ${error.message}`);
+        event.signups = 0; // if cannot find data
+      });
+    });
+
+    return Promise.all(requestPromises);
+  }
 });
 </script>
 </body>
