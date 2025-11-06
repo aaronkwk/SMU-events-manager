@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
         <h3 class="mb-2" style="color:#041373;"><strong>${trendingEvent.title}</strong></h3>
         <p class="mb-1"><i class="bi bi-calendar-event"></i> <strong>${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</strong></p>
-        <p class="mb-3">${trendingEvent.details}</p>
+        <p class="mb-3" style="color: rgb(33, 37, 41);">${trendingEvent.details}</p>
       </div>
     </div>
     `;
