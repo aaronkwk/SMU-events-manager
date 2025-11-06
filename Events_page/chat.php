@@ -2,12 +2,6 @@
 // chat.php — updated
 declare(strict_types=1);
 session_start();
-// spl_autoload_register(
-//   function ($class) {
-//     require_once "model/$class.php";
-//   }
-// );
-
 require_once 'db_connect.php';
 require_once 'config.php';
 
