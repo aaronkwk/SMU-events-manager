@@ -248,7 +248,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
   <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="regTitle">
     <div class="modal-card">
-      <button class="close-btn" aria-label="Close" id="closeRegister">×</button>
+      <button class="close-btn" aria-label="Close" id="closeRegister" onclick="window.location.href='landing.php'"><strong>«</strong></button>
 
       <div class="form-narrow">
         <h1 id="regTitle" class="brand">Welcome!</h1>
