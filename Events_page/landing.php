@@ -54,7 +54,7 @@ $events_json = json_encode($events_arr);
 </head>
 <body>
 <div class="maincontainer">
-
+  <a href="test.php">Go to test.php</a>
   <!-- Left 2/3: Landing content -->
   <div class="left container py-4">
     <div class="wbname d-flex align-items-center justify-content-center">
