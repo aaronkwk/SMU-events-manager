@@ -1,6 +1,6 @@
 <?php
 // chat_leave.php
-// declare(strict_types=1);
+declare(strict_types=1);
 session_start();
 // spl_autoload_register(
 //   function ($class) {

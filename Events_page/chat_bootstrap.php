@@ -1,6 +1,6 @@
 <?php
 // chat_bootstrap.php
-// declare(strict_types=1);
+declare(strict_types=1);
 session_start();
 require_once 'db_connect.php';
 require_once 'config.php';
