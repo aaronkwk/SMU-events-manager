@@ -244,10 +244,11 @@ document.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-remove]');
   if (!btn) return;
   const [title, startISO] = btn.dataset.remove.split('|');
-  const updatedList = loadMyEvents.filter(ev => !(ev.title === title && ev.startISO === startISO));
+  loadMyEvents = loadMyEvents.filter(ev => !(ev.title === title && ev.startISO === startISO));
   console.log(btn.dataset.eid);
   removeEvents(btn.dataset.eid);
-  loadMyEvents = updatedList;
+  removePoints();
+
   render(loadMyEvents);
 });
 
@@ -282,6 +283,25 @@ function removeAllEvents() {
   })
     .then(response => {
         console.log(response.data);
+    })
+    .catch(error => {
+        console.log(error.message);
+    });
+}
+
+function removePoints() {
+  let userID = <?= $currentUser ?>;
+  let url = "axios/sql_updating.php";
+
+  axios.get(url, { params:
+    {
+    "personID": userID,
+    "option": "removePts"
+    }
+  })
+    .then(response => {
+        console.log(response.data);
+        
     })
     .catch(error => {
         console.log(error.message);
