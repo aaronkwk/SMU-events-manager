@@ -37,7 +37,7 @@ if (!isset($_SESSION['username'])){
 <div class="container py-4">
   <div class="wbname d-flex align-items-center justify-content-center">
     <img src="pictures/omni_logo.png" alt="Omni Logo" class="omni-logo me-2">
-  <h1 class="omni-title mb-0">OMNI</h1>
+  <h1 class="omni-title mb-0">OMNIs</h1>
 </div>
 
   <br>
