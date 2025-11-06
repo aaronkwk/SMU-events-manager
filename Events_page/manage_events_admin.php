@@ -65,7 +65,7 @@ $events_json = array_map(function($ev) {
   <style>
     body {
       background: #f5f7fa;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; */
     }
     
     .container-fluid {
@@ -285,12 +285,12 @@ $events_json = array_map(function($ev) {
   <div class="row h-100">
     <!-- Sidebar -->
     <aside class="col-auto sidebar d-flex flex-column p-4">
-      <ul class="navbar-nav ps-0">
-        <li><a class="nav-link ula" href="manage_events_admin.php">Manage Events</a></li>
-        <li><a class="nav-link ula" href="statistics.php">Statistics</a></li>
-        <!-- <li><a class="nav-link ula" href="chat.php">Chat</a></li> -->
-      </ul>
-    </aside>
+        <ul class="navbar-nav ps-0">
+          <li><a class="nav-link ula" href="manage_events_admin.php">Manage Events</a></li>
+          <li><a class="nav-link ula" href="statistics.php">Statistics</a></li>
+          <li><a class="nav-link ula" href="chat.php">Chat</a></li>
+        </ul>
+      </aside>
 
     <!-- Main Content -->
     <main class="col d-flex flex-column p-0">
