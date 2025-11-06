@@ -152,32 +152,53 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(events);
     let trendingEvent = events[0];
     console.log(trendingEvent);
-
+     const saved = loadMyEvents; // your user_events from PHP
+    const isSaved = saved.some(m => keyOf(m) === keyOf(trendingEvent));
+    const hasClashAgainstOthers = clashesWithOthers(trendingEvent, saved);
+    const saveDisabled = (isSaved || hasClashAgainstOthers) ? 'disabled aria-disabled="true"' : '';
+    const saveBtnClasses = `btn ${isSaved ? 'btn-success' : (hasClashAgainstOthers ? 'btn-outline-secondary' : 'btn-outline-primary')} btn-sm`;
     trendingDiv = document.getElementById("trending");
     trendingDiv.innerHTML = `
-     <div class="featured-event" onclick="showSignInPrompt()">
-        <div class="featured-image">
-          <img src="${trendingEvent.picture}" alt="${trendingEvent.title}">
+  <div class="featured-event">
+    <div class="featured-image">
+      <img src="${trendingEvent.picture}" alt="${trendingEvent.title}">
+    </div>
+    <div class="featured-details">
+      <span class="trending-badge"><i class="bi bi-lightning-fill"></i> Featured Event</span>
+      <h3>${trendingEvent.title}</h3>
+      <div class="event-meta">
+        <div class="event-meta-item">
+          <i class="bi bi-calendar-event"></i>
+          <span>${formatDate(trendingEvent.startISO || trendingEvent.date)}</span>
         </div>
-        <div class="featured-details">
-          <span class="trending-badge"><i class="bi bi-lightning-fill"></i> Featured Event</span>
-          <h3>${trendingEvent.title}</h3>
-          <div class="event-meta">
-            <div class="event-meta-item">
-              <i class="bi bi-calendar-event"></i>
-              <span>${formatDate(trendingEvent.date)}</span>
-            </div>
-            <div class="event-meta-item">
-              <i class="bi bi-clock"></i>
-              <span>${trendingEvent.start_time} - ${trendingEvent.end_time}</span>
-            </div>
-            <div class="event-meta-item">
-              <i class="bi bi-geo-alt-fill"></i>
-              <span>${trendingEvent.location}</span>
-            </div>
-          </div>
+        <div class="event-meta-item">
+          <i class="bi bi-clock"></i>
+          <span>${trendingEvent.start_time} - ${trendingEvent.end_time}</span>
         </div>
-      </div>`;
+        <div class="event-meta-item">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>${trendingEvent.location}</span>
+        </div>
+        <div class="event-meta-item" style="margin-top:auto; display:flex; gap:8px; flex-wrap:wrap;">
+          <a class="btn btn-outline-secondary btn-sm" href="#">Details</a>
+          <button class="${saveBtnClasses}"
+            type="button"
+            ${saveDisabled}
+            data-save-local
+            data-eid="${trendingEvent.id}"
+            data-title="${trendingEvent.title}"
+            data-location="${trendingEvent.location}"
+            data-start="${trendingEvent.startISO}"
+            data-end="${trendingEvent.endISO}"
+            data-img="${trendingEvent.picture}"
+            data-details="${(trendingEvent.details || '').replace(/"/g,'&quot;')}"
+            data-categories='${JSON.stringify(Array.isArray(trendingEvent.category) ? trendingEvent.category : [trendingEvent.category])}'>
+            ${isSaved ? 'Saved' : (hasClashAgainstOthers ? 'Clashes with My Events' : 'Save to My Events')}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
 
     // render the carousel all events
     applyFilter();

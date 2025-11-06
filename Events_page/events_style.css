@@ -604,3 +604,53 @@ body::before {
   justify-content: center;
   filter: drop-shadow(0 2px 4px rgba(191, 156, 96, 0.3));
 }
+
+/* Tighten button spacing inside event-meta-item */
+.event-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* tighter gap between icon and button */
+}
+
+/* Adjust icon alignment */
+.event-meta-item i {
+  font-size: 1.05rem;
+  margin-right: 4px;
+  color: var(--gold); /* optional if you want accent */
+}
+
+/* Softer button contrast for featured section */
+.featured-event .btn {
+  background-color: rgba(255, 255, 255, 0.998) !important; /* translucent white */
+  color: #041373 !important;
+  backdrop-filter: blur(3px); /* optional glassy effect */
+  padding: 8px 14px; border-radius:10px; font-size:.82rem; font-weight:600; transition: all .3s ease; border:2px solid;
+} 
+
+.featured-event .btn:hover {
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+}
+
+/* Make disabled buttons more neutral */
+.featured-event .btn:disabled,
+.featured-event .btn[aria-disabled="true"] {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.featured-event .event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px; /* space between items like date/time and the buttons */
+}
+
+/* Let each meta-item flow inline instead of stacking */
+.featured-event .event-meta-item {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  white-space: nowrap;
+}
