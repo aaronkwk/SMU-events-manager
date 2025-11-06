@@ -40,6 +40,7 @@ $events_json = json_encode($events_arr);
 <link rel="stylesheet" type="text/css" href="landing_style.css">
 <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
 </head>
+
 <body>
 <div class="page-container">
   <div class="header-row">

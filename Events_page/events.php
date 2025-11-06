@@ -213,7 +213,7 @@ console.log(user_events);
    Local “My Events” store
    ========================= */
 const MY_EVENTS_KEY = 'smu_my_events_v1';
-const loadMyEvents = user_events;
+let loadMyEvents = user_events;
 
 const keyOf = (ev) => `${ev.title}__${ev.startISO}`;
 
