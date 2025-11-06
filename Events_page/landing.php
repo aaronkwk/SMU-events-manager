@@ -114,11 +114,6 @@ $events_json = json_encode($events_arr);
         <button class="btn btn-cta my-3" type="submit">Login</button>
       </form>
 
-      <div class="my-3 divider">Or continue with</div>
-      <button type="button" class="btn btn-google">
-        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_64dp.png" alt="Google"> Google
-      </button>
-
       <p class="mt-3 text-center text-muted">
         Don't have an account? <a href="#" onclick="switchToRegister(event)" style="color: #5563DE; text-decoration: none; font-weight: 600;">Register</a>
       </p>
@@ -214,11 +209,6 @@ $events_json = json_encode($events_arr);
 
         <button class="btn btn-cta mt-3" type="submit">Create Account</button>
       </form>
-
-      <div class="my-3 divider">Or continue with</div>
-      <button type="button" class="btn btn-google">
-        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_64dp.png" alt="Google"> Google
-      </button>
 
       <p class="mt-3 text-center text-muted">
         Already registered? <a href="#" onclick="switchToLogin(event)" style="color: #5563DE; text-decoration: none; font-weight: 600;">Sign in</a>
