@@ -37,7 +37,7 @@ $events_json = json_encode($events_arr);
 <link rel="stylesheet" type="text/css" href="events_style.css">
 <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
 <style>
-body, html {margin:0; padding:0; height:100%; font-family:"Poppins",sans-serif;}
+/* body, html {margin:0; padding:0; height:100%; font-family:"Poppins",sans-serif;} */
 .maincontainer {display:flex; height:100vh; margin:0; padding:0;}
 .left {flex:2; background:whitesmoke; color:goldenrod; display:flex; flex-direction:column; justify-content:start; align-items:center; padding:2rem; overflow-y:auto;}
 .right {flex:1; background-color:rgb(20,27,77); display:flex; justify-content:center; align-items:center; padding:3rem;}
@@ -63,8 +63,8 @@ body, html {margin:0; padding:0; height:100%; font-family:"Poppins",sans-serif;}
     </div>
     <br>
     <div class="text-center mb-4">
-      <h2 class="fw-bold" style="color:#FDD835;">Discover Events at SMU</h2>
-      <p class="text-muted mb-0">Explore events in the school - Find events you like and save them to My Events.</p>
+      <h2 class="fw-bold" style="color:#041373;">Discover Events at SMU</h2>
+      <p class="text-muted mb-0"><strong>Explore events in the school - Find events you like and save them to My Events.</strong></p>
     </div>
 
     <!-- Trending Event -->
@@ -109,8 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <img src="${trendingEvent.picture}" alt="Featured Event" class="event-thumb me-md-3 mb-3 mb-md-0" style="max-width:320px; border-radius:10px;">
         <div>
           <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
-          <h3 class="mb-2" style="color:#041373;">${trendingEvent.title}</h3>
-          <p class="mb-1"><i class="bi bi-calendar-event"></i> ${trendingEvent.date} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</p>
+          <h3 class="mb-2" style="color:#041373;"><strong>${trendingEvent.title}</strong></h3>
+          <p class="mb-1"><i class="bi bi-calendar-event"></i> <strong>${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</strong></p>
         </div>
       </div>`;
   }
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="event-body">
           <h5 class="event-title mb-1">${e.title}</h5>
           <ul class="meta-list">
-            <li><i class="bi bi-calendar2-event"></i>${e.date}</li>
+            <li><i class="bi bi-calendar2-event"></i>${formatDate(e.startISO)}</li>
             <li><i class="bi bi-clock"></i>${e.start_time} - ${e.end_time}</li>
             <li><i class="bi bi-geo-alt"></i>${e.location}</li>
           </ul>
@@ -146,6 +146,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function formatDate(startISO) {
+    const optsDate = {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    };
+    const optsTime = { hour:'2-digit', minute:'2-digit' };
+
+    let s = new Date(startISO);
+    let dateText = s.toLocaleDateString(undefined, optsDate);
+    return dateText;
+  }
   renderCarousel(events);
 });
 </script>

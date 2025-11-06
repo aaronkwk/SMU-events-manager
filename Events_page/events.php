@@ -62,7 +62,7 @@ if (!isset($_SESSION['username'])){
 
   <div class="text-center mb-4">
     <h2 class="fw-bold" style="color:#041373;">Discover Events at SMU</h2>
-    <p class="text-muted mb-0">Explore events in the school - Find events you like and save them to My Events.</p>
+    <p class="text-muted mb-0"><strong>Explore events in the school - Find events you like and save them to My Events.</strong></p>
   </div>
 
   <!-- trending event at the top -->
@@ -159,8 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
           style="max-width:320px; border-radius:10px;">
       <div>
         <h2 class="mb-2" style="color:#041373;"><strong>Trending Event</strong></h2>
-        <h3 class="mb-2" style="color:#041373;">${trendingEvent.title}</h3>
-        <p class="mb-1"><i class="bi bi-calendar-event"></i> ${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</p>
+        <h3 class="mb-2" style="color:#041373;"><strong>${trendingEvent.title}</strong></h3>
+        <p class="mb-1" style="color:goldenrod;"><i class="bi bi-calendar-event"></i> <strong>${formatDate(trendingEvent.startISO)} • ${trendingEvent.start_time} - ${trendingEvent.end_time}</strong></p>
         <p class="mb-3">Join the biggest hackathon of the year and compete for prizes!</p>
         <a href="#" class="btn btn-primary btn-sm">View Details</a>
       </div>
