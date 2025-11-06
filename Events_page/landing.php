@@ -32,7 +32,7 @@ $events_json = json_encode($events_arr);
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>OMNI – SMU Events</title>
+<title>OMNI - SMU Events</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -161,9 +161,9 @@ $events_json = json_encode($events_arr);
             <div id="pwRulesBox" class="pw-box">
               <div class="pw-rules" aria-live="polite">
                 <div class="rule" data-rule="len"><span class="dot"></span> At least 10 characters</div>
-                <div class="rule" data-rule="upper"><span class="dot"></span> Uppercase letter (A–Z)</div>
-                <div class="rule" data-rule="lower"><span class="dot"></span> Lowercase letter (a–z)</div>
-                <div class="rule" data-rule="num"><span class="dot"></span> Number (0–9)</div>
+                <div class="rule" data-rule="upper"><span class="dot"></span> Uppercase letter (A-Z)</div>
+                <div class="rule" data-rule="lower"><span class="dot"></span> Lowercase letter (a-z)</div>
+                <div class="rule" data-rule="num"><span class="dot"></span> Number (0-9)</div>
                 <div class="rule" data-rule="sym"><span class="dot"></span> Symbol (!@#$…)</div>
                 <div class="rule" data-rule="space"><span class="dot"></span> No spaces</div>
               </div>
@@ -236,15 +236,28 @@ const eventsPerPage = 3;
 const totalSlides = Math.ceil(events.length / eventsPerPage);
 
 // Find trending event
-function getTrendingEvent() {
-  if (events.length === 0) return null;
-  const now = new Date();
-  const upcomingEvents = events.filter(e => new Date(e.startISO) > now);
-  if (upcomingEvents.length > 0) {
-    upcomingEvents.sort((a, b) => new Date(a.startISO) - new Date(b.startISO));
-    return upcomingEvents[0];
-  }
-  return events[0];
+function getAllEventRankings() {
+  let url = "axios/sql_updating.php";
+
+  const requestPromises = events.map((event) => {
+    return axios.get(url, { params: 
+      {
+        "eventID": event.id,
+        "option": "getCount"
+      }
+    })
+    .then(response => {
+      console.log(response.data); 
+      let count = response.data;
+      event.signups = count; 
+    })
+    .catch(error => {
+      console.log(`Error fetching count for event ${event.id}: ${error.message}`);
+      event.signups = 0; // if cannot find data
+    });
+  });
+
+  return Promise.all(requestPromises);
 }
 
 function formatDate(dateStr) {
@@ -254,33 +267,67 @@ function formatDate(dateStr) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const trendingEvent = getTrendingEvent();
-  if(trendingEvent) {
-    document.getElementById("trending").innerHTML = `
-      <div class="featured-event" onclick="showSignInPrompt()">
-        <div class="featured-image">
-          <img src="${trendingEvent.picture}" alt="${trendingEvent.title}">
-        </div>
-        <div class="featured-details">
-          <span class="trending-badge"><i class="bi bi-lightning-fill"></i> Featured Event</span>
-          <h3>${trendingEvent.title}</h3>
-          <div class="event-meta">
-            <div class="event-meta-item">
-              <i class="bi bi-calendar-event"></i>
-              <span>${formatDate(trendingEvent.date)}</span>
-            </div>
-            <div class="event-meta-item">
-              <i class="bi bi-clock"></i>
-              <span>${trendingEvent.start_time} - ${trendingEvent.end_time}</span>
-            </div>
-            <div class="event-meta-item">
-              <i class="bi bi-geo-alt-fill"></i>
-              <span>${trendingEvent.location}</span>
+  getAllEventRankings().then(() => {      
+    events.sort((a, b) => b.signups - a.signups);
+    console.log(events);
+    let trendingEvent = events[0];
+    console.log(trendingEvent);
+
+    // displaying the trending event
+    if(trendingEvent) {
+      document.getElementById("trending").innerHTML = `
+        <div class="featured-event" onclick="showSignInPrompt()">
+          <div class="featured-image">
+            <img src="${trendingEvent.picture}" alt="${trendingEvent.title}">
+          </div>
+          <div class="featured-details">
+            <span class="trending-badge"><i class="bi bi-lightning-fill"></i> Featured Event</span>
+            <h3>${trendingEvent.title}</h3>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-calendar-event"></i>
+                <span>${formatDate(trendingEvent.date)}</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-clock"></i>
+                <span>${trendingEvent.start_time} - ${trendingEvent.end_time}</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>${trendingEvent.location}</span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>`;
-  }
+        </div>`;
+    }
+  });
+  // const trendingEvent = getTrendingEvent();
+  // if(trendingEvent) {
+  //   document.getElementById("trending").innerHTML = `
+  //     <div class="featured-event" onclick="showSignInPrompt()">
+  //       <div class="featured-image">
+  //         <img src="${trendingEvent.picture}" alt="${trendingEvent.title}">
+  //       </div>
+  //       <div class="featured-details">
+  //         <span class="trending-badge"><i class="bi bi-lightning-fill"></i> Featured Event</span>
+  //         <h3>${trendingEvent.title}</h3>
+  //         <div class="event-meta">
+  //           <div class="event-meta-item">
+  //             <i class="bi bi-calendar-event"></i>
+  //             <span>${formatDate(trendingEvent.date)}</span>
+  //           </div>
+  //           <div class="event-meta-item">
+  //             <i class="bi bi-clock"></i>
+  //             <span>${trendingEvent.start_time} - ${trendingEvent.end_time}</span>
+  //           </div>
+  //           <div class="event-meta-item">
+  //             <i class="bi bi-geo-alt-fill"></i>
+  //             <span>${trendingEvent.location}</span>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>`;
+  // }
 
   renderSlide(currentSlide);
   renderDots();
