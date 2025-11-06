@@ -49,7 +49,6 @@ if (!isset($_SESSION['username'])){
     <div class="navbar-nav" id="navitems">
       <a class="nav-item nav-link ula nvit" href="#">Events </a>
       <!-- <a class="nav-item nav-link ula nvit" href="#">Daily Challenge</a> -->
-      <a class="nav-item nav-link ula nvit" href="#">Account</a>
       <a class="nav-item nav-link ula nvit" href="my_events_user.php">My Events</a>
       <a class="nav-item nav-link ula nvit" href="dashboard.php">Dashboard</a>
     </div>
