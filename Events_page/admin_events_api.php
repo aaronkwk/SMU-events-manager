@@ -2,11 +2,7 @@
 // admin_events_api.php — updated for 'details' field, file upload, creator ownership
 declare(strict_types=1);
 session_start();
-spl_autoload_register(
-    function ($class) {
-        require_once "model/$class.php";
-    }
-);
+require_once 'db_connect.php';
 require_once 'config.php';
 
 header('Content-Type: application/json; charset=utf-8');
