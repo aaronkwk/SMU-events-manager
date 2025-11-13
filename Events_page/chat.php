@@ -8,7 +8,10 @@ spl_autoload_register(
     }
 );
 require_once 'config.php';
+$lifetime = 4 * 60 * 60; // 14400 seconds
 
+ini_set('session.gc_maxlifetime', $lifetime);
+ini_set('session.cookie_lifetime', $lifetime);
 if (!isset($_SESSION['username'])) {
   echo "<script>alert('Login required'); location.href='Login.php';</script>";
   exit;
