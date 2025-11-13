@@ -10,7 +10,10 @@ spl_autoload_register(
 require_once 'config.php';
 
 header('Content-Type: application/json');
+$lifetime = 4 * 60 * 60; // 14400 seconds
 
+ini_set('session.gc_maxlifetime', $lifetime);
+ini_set('session.cookie_lifetime', $lifetime);
 if (!isset($_SESSION['username'])) {
   http_response_code(200); echo json_encode(['ok'=>false,'error'=>'Login required']); exit;
 }
