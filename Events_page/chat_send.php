@@ -9,10 +9,7 @@ spl_autoload_register(
 );
 require_once 'config.php';
 header('Content-Type: application/json');
-$lifetime = 4 * 60 * 60; // 14400 seconds
 
-ini_set('session.gc_maxlifetime', $lifetime);
-ini_set('session.cookie_lifetime', $lifetime);
 function log_err(string $msg) {
   error_log('[chat_send] ' . $msg . "\n", 3, __DIR__ . 'chat_send.log');
 }

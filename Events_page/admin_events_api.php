@@ -10,10 +10,7 @@ spl_autoload_register(
 require_once 'config.php';
 
 header('Content-Type: application/json; charset=utf-8');
-$lifetime = 4 * 60 * 60; // 14400 seconds
 
-ini_set('session.gc_maxlifetime', $lifetime);
-ini_set('session.cookie_lifetime', $lifetime);
 try {
   $cm = new ConnectionManager();
   $db = $cm->getConnection();
