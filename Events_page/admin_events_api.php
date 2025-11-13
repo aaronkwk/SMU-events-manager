@@ -13,7 +13,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 try {
   $cm = new ConnectionManager();
-  $db = $cm->connect();
+  $db = $cm->getConnection();
 
   if (!isset($_SESSION['username'])) {
     http_response_code(401);

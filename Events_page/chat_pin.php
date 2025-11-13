@@ -1,7 +1,11 @@
 <?php
 declare(strict_types=1);
 session_start();
-require_once 'db_connect.php';
+spl_autoload_register(
+    function ($class) {
+        require_once "model/$class.php";
+    }
+);
 require_once 'config.php';
 header('Content-Type: application/json');
 
