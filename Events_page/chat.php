@@ -622,7 +622,7 @@ body {
       await fetchMessages();
       await refreshUnread();
       await loadPinned();
-    }, 6000);
+    }, 3000);
   }
 
   // ----- Send text/file
