@@ -17,7 +17,7 @@ $targetLocalId = (int)($_POST['target_user_id'] ?? 0); // numeric (e.g., 42)
 if ($eventId <= 0 || $targetLocalId <= 0) { echo json_encode(['error'=>'Missing params']); exit; }
 
 try {
-  $cm = new ConnectionManager(); $db = $cm->connect();
+  $cm = new ConnectionManager(); $db = $cm->getConnection();
 
   // who am i
   $u = $db->prepare("SELECT id, role FROM users WHERE username=?");

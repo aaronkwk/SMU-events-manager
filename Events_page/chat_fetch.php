@@ -23,7 +23,7 @@ $limit = max(1, min(100, $limit));
 
 try {
   $cm = new ConnectionManager();
-  $db = $cm->connect();
+  $db = $cm->getConnection();
 
   $q = $db->prepare("SELECT channel_url FROM event_chat_channel WHERE event_id=?");
   $q->execute([$eventId]);

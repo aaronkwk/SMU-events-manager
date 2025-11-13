@@ -17,7 +17,7 @@ $messageId = (string)($_POST['message_id'] ?? '');
 if($eventId<=0 || $messageId===''){ http_response_code(400); echo json_encode(['error'=>'Missing params']); exit; }
 
 try{
-  $cm=new ConnectionManager(); $db=$cm->connect();
+  $cm=new ConnectionManager(); $db=$cm->getConnection();
   $u=$db->prepare("SELECT id FROM users WHERE username=?"); $u->execute([$_SESSION['username']]);
   $me=$u->fetch(PDO::FETCH_ASSOC); if(!$me) throw new RuntimeException('User not found');
   $sbUserId="user_".(int)$me['id'];

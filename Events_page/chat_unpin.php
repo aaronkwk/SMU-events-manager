@@ -15,7 +15,7 @@ $eventId = (int)($_POST['event_id'] ?? 0);
 if ($eventId <= 0) { echo json_encode(['error'=>'Missing params']); exit; }
 
 try {
-  $cm = new ConnectionManager(); $db = $cm->connect();
+  $cm = new ConnectionManager(); $db = $cm->getConnection();
 
   $u = $db->prepare("SELECT id, role FROM users WHERE username=?");
   $u->execute([$_SESSION['username']]);

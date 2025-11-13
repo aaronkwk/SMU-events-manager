@@ -15,7 +15,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $cm = new ConnectionManager();
-$db = $cm->connect();
+$db = $cm->getConnection();
 
 // Resolve current user
 $u = $db->prepare("SELECT id, username, role FROM users WHERE username=?");

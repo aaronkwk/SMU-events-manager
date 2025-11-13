@@ -21,7 +21,7 @@ if ($eventId <= 0) { http_response_code(400); echo json_encode(['error'=>'Missin
 
 try {
   $cm = new ConnectionManager();
-  $db = $cm->connect();
+  $db = $cm->getConnection();
 
   // who am i
   $u = $db->prepare("SELECT id, role FROM users WHERE username=?");

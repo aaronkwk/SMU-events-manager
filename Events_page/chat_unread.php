@@ -16,7 +16,7 @@ $action = $_GET['action'] ?? 'list';
 $eventId = (int)($_GET['event_id'] ?? 0);
 
 try{
-  $cm=new ConnectionManager(); $db=$cm->connect();
+  $cm=new ConnectionManager(); $db=$cm->getConnection();
   $u=$db->prepare("SELECT id FROM users WHERE username=?"); $u->execute([$_SESSION['username']]);
   $me=$u->fetch(PDO::FETCH_ASSOC); if(!$me) throw new RuntimeException('User not found');
   $sbUserId="user_".(int)$me['id'];

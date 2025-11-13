@@ -15,7 +15,7 @@ $eventId = (int)($_GET['event_id'] ?? 0);
 if ($eventId <= 0) { echo json_encode(['members'=>[]]); exit; }
 
 try {
-  $cm = new ConnectionManager(); $db = $cm->connect();
+  $cm = new ConnectionManager(); $db = $cm->getConnection();
 
   $q = $db->prepare("SELECT channel_url FROM event_chat_channel WHERE event_id=?");
   $q->execute([$eventId]);

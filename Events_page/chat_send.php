@@ -21,7 +21,7 @@ $message = trim((string)($_POST['message'] ?? ''));
 if ($eventId <= 0) { http_response_code(400); echo json_encode(['error'=>'Missing event_id']); exit; }
 
 try {
-  $cm = new ConnectionManager(); $db = $cm->connect();
+  $cm = new ConnectionManager(); $db = $cm->getConnection();
 
   $u = $db->prepare("SELECT id, username FROM users WHERE username=?");
   $u->execute([$_SESSION['username']]);

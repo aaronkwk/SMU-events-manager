@@ -21,7 +21,7 @@ if ($eventId <= 0) {
 }
 
 try {
-  $cm = new ConnectionManager(); $db = $cm->connect();
+  $cm = new ConnectionManager(); $db = $cm->getConnection();
 
   // who am i
   $u = $db->prepare("SELECT id, username, role FROM users WHERE username=?");
